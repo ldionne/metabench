@@ -13,12 +13,6 @@ build:
 configuration:
   - Debug
 
-environment:
-  matrix:
-    - TESTS_ONLY: true
-    - EXAMPLES_ONLY: true
-
-
 install:
   ############################################################################
   # All external dependencies are installed in C:\projects\deps
@@ -61,9 +55,15 @@ before_build:
 
 build_script:
   # Example
-  - (mkdir example/build && cd example/build && cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl)
-  - cmake --build example/build --target path.to.benchmark
+  - mkdir example\build
+  - pushd example\build
+  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+  - popd
+  - cmake --build example\build --target path.to.benchmark
 
   # Unit tests
-  - (mkdir test/build && cd test/build && cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl)
-  - cmake --build test/build --target check
+  - mkdir test\build
+  - pushd test\build
+  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+  - popd
+  - cmake --build test\build --target check
