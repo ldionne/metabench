@@ -47,6 +47,12 @@ install:
   - set PATH=C:\projects\deps\llvm\bin;%PATH%
   - clang-cl -v
 
+  ############################################################################
+  # Use a more recent Ruby by default
+  ############################################################################
+  - set PATH=C:\Ruby21;%PATH%
+  - ruby --version
+
 
 before_build:
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
