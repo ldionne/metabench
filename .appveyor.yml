@@ -55,7 +55,7 @@ install:
   - dir C:\Ruby21\include
   - dir C:\Ruby21\lib
   - dir C:\Ruby21\share
-  - set PATH=C:\Ruby21\bin;%PATH%
+  - set PATH=C:\Ruby21\bin;C:\Ruby21;%PATH%
   - ruby --version
   - gem --version
   - gem install ruby-progressbar tilt
