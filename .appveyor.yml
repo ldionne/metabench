@@ -50,6 +50,7 @@ install:
   ############################################################################
   # Use a more recent Ruby by default, and install required gems
   ############################################################################
+  - dir C:\Ruby21
   - set PATH=C:\Ruby21\bin;%PATH%
   - ruby --version
   - gem --version
