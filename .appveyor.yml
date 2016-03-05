@@ -48,10 +48,12 @@ install:
   - clang-cl -v
 
   ############################################################################
-  # Use a more recent Ruby by default
+  # Use a more recent Ruby by default, and install required gems
   ############################################################################
-  - set PATH=C:\Ruby21;%PATH%
+  - set PATH=C:\Ruby21\bin;%PATH%
   - ruby --version
+  - gem --version
+  - gem install ruby-progressbar tilt
 
 
 before_build:
