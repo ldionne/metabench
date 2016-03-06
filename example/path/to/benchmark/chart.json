@@ -32,8 +32,7 @@
             # This file is also passed through CMake `configure_file`, so
             # variables defined in the CMake file that calls `add_benchmark`
             # can also be used here.
-            cxx: '@CMAKE_CXX_COMPILER@',
-            cxxflags: '-std=c++11 -I @CMAKE_SOURCE_DIR@/include',
+            cxxflags: '-I @CMAKE_SOURCE_DIR@/include',
             env: {variable: "foo"}
         )
       %>
@@ -42,10 +41,7 @@
     , {
       "name": "recursive tuple",
       "data": <%=
-        Metabench.compile_time("recursive_tuple.cpp", (0...50).step(5),
-            cxx: '@CMAKE_CXX_COMPILER@',
-            cxxflags: '-std=c++11'
-        )
+        Metabench.compile_time("recursive_tuple.cpp", (0...50).step(5))
       %>
     }
   ]

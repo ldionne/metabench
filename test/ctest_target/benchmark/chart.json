@@ -1,2 +1,1 @@
-<%= Metabench.compile_time("dummy.cpp", (0..50).step(5),
-                           cxx: '@CMAKE_CXX_COMPILER@') %>
+<%= Metabench.compile_time("dummy.cpp", (0..50).step(5)) %>

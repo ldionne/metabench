@@ -80,9 +80,14 @@ function(metabench_add_benchmark target path_to_dir)
     set(configured_chart_json "${CMAKE_CURRENT_BINARY_DIR}/_metabench/${path_to_dir}/chart.json")
     configure_file("${path_to_dir}/chart.json" ${configured_chart_json} @ONLY)
 
+    # We pass metabench.rb file through CMake's `configure_file`, so current
+    # values of CMAKE_CXX_COMPILER and CMAKE_CXX_FLAGS are taken into account.
+    set(configured_metabench_rb "${CMAKE_CURRENT_BINARY_DIR}/_metabench/${path_to_dir}/metabench.rb")
+    configure_file(${METABENCH_RB_PATH} ${configured_metabench_rb} @ONLY)
+
     # Setup the command to generate `path/to/dir/chart.json`.
     add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${path_to_dir}.json"
-        COMMAND ${RUBY_EXECUTABLE} -r fileutils -r tilt/erb -r ${METABENCH_RB_PATH}
+        COMMAND ${RUBY_EXECUTABLE} -r fileutils -r tilt/erb -r ${configured_metabench_rb}
             # We use `.render(binding)` to carry the 'require' of the 'metabench.rb' module.
             -e "chart = Tilt::ERBTemplate.new('${configured_chart_json}').render(binding)"
             -e "FileUtils.mkdir_p(File.dirname('${CMAKE_CURRENT_BINARY_DIR}/${path_to_dir}.json'))"
@@ -103,7 +108,7 @@ function(metabench_add_benchmark target path_to_dir)
     # Setup the command to test the benchmark.
     add_test(NAME ${target}
         COMMAND ${CMAKE_COMMAND} -E env METABENCH_TEST_ONLY=true
-                ${RUBY_EXECUTABLE} -r tilt/erb -r ${METABENCH_RB_PATH}
+                ${RUBY_EXECUTABLE} -r tilt/erb -r ${configured_metabench_rb}
                 -e "Tilt::ERBTemplate.new('${configured_chart_json}').render(binding)"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${path_to_dir})
 
@@ -137,8 +142,9 @@ file(WRITE ${METABENCH_RB_PATH}
 "  # This function is meant to be called inside a ERB-based `chart.json` file.                     \n"
 "  # `erb_template` should be the name of the `.cpp` file containing the                           \n"
 "  # benchmark to run.                                                                             \n"
-"  def self.measure(erb_template, range, cxx: ENV['CXX'], cxxflags: ENV['CXXFLAGS'], env: {})      \n"
-"    raise \"invalid `cxx` parameter (#{cxx})\" if not cxx                                         \n"
+"  def self.measure(erb_template, range, cxxflags: '', env: {})                                    \n"
+"    cxx = \"\@CMAKE_CXX_COMPILER\@\"                                                              \n"
+"    cxxflags = \"\@CMAKE_CXX_FLAGS\@ #{cxxflags}\"                                                \n"
 "    range = range.to_a                                                                            \n"
 "    range = [range[0], range[-1]] if ENV['METABENCH_TEST_ONLY'] && range.length >= 2              \n"
 "                                                                                                  \n"
