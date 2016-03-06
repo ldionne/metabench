@@ -50,7 +50,7 @@ install:
   ############################################################################
   # Use a more recent Ruby by default, and install required gems
   ############################################################################
-  - set PATH=C:\Ruby21\bin;C:\Ruby21;%PATH%
+  - set PATH=C:\Ruby21-x64\bin;C:\Ruby21-x64;%PATH%
   - ruby --version
   - gem --version
   - gem install ruby-progressbar tilt
