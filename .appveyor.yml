@@ -64,16 +64,16 @@ before_build:
 build_script:
   # Run the example
   - mkdir example\build
-  - pushd example\build
+  - cd example\build
   - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
-  - popd
+  - cd ..\..
   - cmake --build example\build --target path.to.benchmark
 
   # Run the unit tests
   - |
     FOR %dir IN (absolute_paths ctest_target) DO
       mkdir test\%dir%\build
-      pushd test\%dir%\build
+      cd test\%dir%\build
       cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
-      popd
+      cd ..\..\..
       cmake --build test\%dir%\build --target check
