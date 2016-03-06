@@ -4,6 +4,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
+set(_RUBY_DEBUG_OUTPUT TRUE)
 find_package(Ruby 2.1)
 # if(NOT ${RUBY_FOUND})
 #     message(WARNING "Ruby >= 2.1 was not found; the metabench.cmake module can't be used.")
