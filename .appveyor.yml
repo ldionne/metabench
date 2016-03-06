@@ -67,16 +67,18 @@ before_build:
 
 
 build_script:
-  # Example
+  # Run the example
   - mkdir example\build
   - pushd example\build
   - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
   - popd
   - cmake --build example\build --target path.to.benchmark
 
-  # Unit tests
-  - mkdir test\build
-  - pushd test\build
-  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
-  - popd
-  - cmake --build test\build --target check
+  # Run the unit tests
+  - |
+    FOR %dir IN (absolute_paths ctest_target) DO
+      mkdir test\%dir%\build
+      pushd test\%dir%\build
+      cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+      popd
+      cmake --build test\%dir%\build --target check
