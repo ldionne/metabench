@@ -128,7 +128,7 @@ endfunction()
 # copy the `metabench.cmake` module to their project, without worrying
 # about implementation details.
 ##############################################################################
-set(METABENCH_RB_PATH ${CMAKE_CURRENT_BINARY_DIR}/_metabench/metabench.rb)
+set(METABENCH_RB_PATH ${CMAKE_CURRENT_BINARY_DIR}/_metabench/metabench.rb.in)
 file(WRITE ${METABENCH_RB_PATH}
 "require 'benchmark'                                                                               \n"
 "require 'open3'                                                                                   \n"
