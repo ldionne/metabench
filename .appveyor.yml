@@ -12,7 +12,7 @@ configuration:
   - Debug
 
 install:
-  - choco install ninja
+  #- choco install ninja
 
   ############################################################################
   # Use a more recent Ruby by default, and install required gems
@@ -32,7 +32,7 @@ build_script:
   # Run the example
   - mkdir example\build
   - cd example\build
-  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=g++
+  - cmake .. -G"MinGW Makefiles"
   - cd ..\..
   - cmake --build example\build --target path.to.benchmark
 
@@ -41,6 +41,6 @@ build_script:
     FOR %dir IN (absolute_paths ctest_target) DO
       mkdir test\%dir%\build
       cd test\%dir%\build
-      cmake .. -GNinja -DCMAKE_CXX_COMPILER=g++
+      cmake .. -G"MinGW Makefiles"
       cd ..\..\..
       cmake --build test\%dir%\build --target check
