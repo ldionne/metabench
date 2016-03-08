@@ -24,23 +24,24 @@ install:
 
 
 before_build:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
-  - cd C:\projects\metabench
+  # MinGW complains about sh.exe being in PATH
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
+  - cd C:\projects\metabench
 
 build_script:
   # Run the example
   - mkdir example\build
   - cd example\build
-  - cmake .. -G"MinGW Makefiles"
+  - cmake .. -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=%CONFIGURATION%
   - cd ..\..
-  - cmake --build example\build --target path.to.benchmark
+  - cmake --build example\build --target path.to.benchmark --config %CONFIGURATION%
 
   # Run the unit tests
   - |
     FOR %dir IN (absolute_paths ctest_target) DO
       mkdir test\%dir%\build
       cd test\%dir%\build
-      cmake .. -G"MinGW Makefiles"
+      cmake .. -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=%CONFIGURATION%
       cd ..\..\..
-      cmake --build test\%dir%\build --target check
+      cmake --build test\%dir%\build --target check --config %CONFIGURATION%
