@@ -3,6 +3,7 @@
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 shallow_clone: true
+platform: x64
 
 build:
   verbosity: detailed
@@ -31,7 +32,7 @@ build_script:
   # Run the example
   - mkdir example\build
   - cd example\build
-  - cmake .. -GNinja
+  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=g++
   - cd ..\..
   - cmake --build example\build --target path.to.benchmark
 
@@ -40,6 +41,6 @@ build_script:
     FOR %dir IN (absolute_paths ctest_target) DO
       mkdir test\%dir%\build
       cd test\%dir%\build
-      cmake .. -GNinja
+      cmake .. -GNinja -DCMAKE_CXX_COMPILER=g++
       cd ..\..\..
       cmake --build test\%dir%\build --target check
