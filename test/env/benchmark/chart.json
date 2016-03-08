@@ -1,0 +1,1 @@
+<%= Metabench.compile_time("dummy.cpp", (0..10).step(5), env: { variable: 123 }) %>

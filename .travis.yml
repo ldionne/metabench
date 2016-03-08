@@ -7,6 +7,12 @@ os: linux
 sudo: false
 compiler: clang
 
+# Do not build branches of the form "pr/*". By prefixing pull requests coming
+# from branches inside the repository with pr/, this avoids building both the
+# branch push _and_ the pull request.
+branches:
+  except: /pr\/.*/
+
 addons:
   apt:
     packages: ninja-build
@@ -38,7 +44,7 @@ script:
 
   # Run the unit tests
   - |
-    for dir in test/absolute_paths test/ctest_target; do
+    for dir in test/absolute_paths test/ctest_target test/env test/local_header test/n; do
       mkdir ${dir}/build
       (cd ${dir}/build && cmake .. -G"${CMAKE_GENERATOR}")
       cmake --build ${dir}/build --target check

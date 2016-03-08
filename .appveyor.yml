@@ -5,6 +5,10 @@
 shallow_clone: true
 platform: x64
 
+branches:
+  except:
+    - /pr\/.+/
+
 build:
   verbosity: detailed
 
@@ -15,33 +19,45 @@ install:
   - choco install ninja
 
   ############################################################################
+  # All external dependencies are installed in C:\projects\deps
+  ############################################################################
+  - mkdir C:\projects\deps
+  - cd C:\projects\deps
+
+  ############################################################################
+  # Install a pre-built Clang-cl
+  ############################################################################
+  - set LLVM_URL="https://www.dropbox.com/s/caol8ihddfwqs31/LLVM-3.7.0-win64.zip?dl=1"
+  - appveyor DownloadFile %LLVM_URL% -FileName llvm.zip
+  - 7z x llvm.zip -oC:\projects\deps\llvm > nul
+  - set PATH=C:\projects\deps\llvm\bin;%PATH%
+  - clang-cl -v
+
+  ############################################################################
   # Use a more recent Ruby by default, and install required gems
   ############################################################################
-  - set PATH=C:\Ruby21-x64\bin;C:\Ruby21-x64;%PATH%
+  - set PATH=C:\Ruby21-x64\bin;C:\Ruby21-x64;C:\Ruby21-x64\lib;%PATH%
   - ruby --version
   - gem --version
   - gem install ruby-progressbar tilt
 
 
 before_build:
-  # MinGW complains about sh.exe being in PATH
-  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-
   - cd C:\projects\metabench
 
 build_script:
   # Run the example
   - mkdir example\build
   - cd example\build
-  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=C:\MinGW\bin\g++ -DCMAKE_BUILD_TYPE=%CONFIGURATION%
+  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_BUILD_TYPE=%CONFIGURATION%
   - cd ..\..
   - cmake --build example\build --target path.to.benchmark --config %CONFIGURATION%
 
   # Run the unit tests
   - |
-    FOR %dir IN (absolute_paths ctest_target) DO
+    FOR %dir IN (absolute_paths ctest_target env local_header n) DO
       mkdir test\%dir%\build
       cd test\%dir%\build
-      cmake .. -GNinja -DCMAKE_CXX_COMPILER=C:\MinGW\bin\g++ -DCMAKE_BUILD_TYPE=%CONFIGURATION%
+      cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_BUILD_TYPE=%CONFIGURATION%
       cd ..\..\..
       cmake --build test\%dir%\build --target check --config %CONFIGURATION%

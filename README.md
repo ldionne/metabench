@@ -19,8 +19,8 @@ higher along with the [Progressbar][] and [Tilt][] gems.
 To use Metabench, make sure you have the dependencies listed above and simply
 drop the `metabench.cmake` file somewhere in your CMake search path for modules.
 Then, use `include(metabench)` to include the module in your CMake file, and
-`add_benchmark` to add a new compile-time benchmark. For example, a minimal
-CMake file using Metabench would look like:
+`metabench_add_benchmark` to add a new compile-time benchmark. For example, a
+minimal CMake file using Metabench would look like:
 
 ```CMake
 # Make sure Metabench can be found when writing include(metabench)
@@ -30,7 +30,7 @@ list(APPEND CMAKE_MODULE_PATH "path/to/metabench/directory")
 include(metabench)
 
 # Add a new benchmark
-add_benchmark(path.to.benchmark "path/to/benchmark")
+metabench_add_benchmark(path.to.benchmark "path/to/benchmark")
 ```
 
 This will create a target named `path.to.benchmark`, which, when run, will

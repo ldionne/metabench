@@ -1,0 +1,1 @@
+<%= Metabench.compile_time("dummy.cpp", [0, 1, 2, 3, 4]) %>

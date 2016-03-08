@@ -23,7 +23,7 @@ if(${__MISSING_GEMS})
 endif()
 
 
-# add_benchmark(target path_to_dir)
+# metabench_add_benchmark(target path_to_dir)
 #
 #   Creates a target for running a compile-time benchmark. After issuing this
 #   command, running the target named `target` will cause the benchmark in the
@@ -40,6 +40,12 @@ endif()
 #   file will be passed through CMake's `configure_file` function. This can be
 #   used to include platform-dependent informations in the `chart.json` file.
 #
+#   Finally, a CTest target with the same name is also created. When run, this
+#   CTest target will run the benchmark for only a subset of the possible input
+#   values, and won't gather any benchmarking data. This is very useful to make
+#   sure that benchmarks stay sane as part of continuous integration scripts,
+#   for example.
+#
 #   Parameters
 #   ----------
 #   target:
@@ -52,7 +58,7 @@ endif()
 #       of this module at https://github.com/ldionne/metabench.
 #
 # [1]: http://www.highcharts.com
-function(add_benchmark target path_to_dir)
+function(metabench_add_benchmark target path_to_dir)
     # Transform any absolute path to a relative path from the current source directory.
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" path_to_dir ${path_to_dir})
 
@@ -75,9 +81,14 @@ function(add_benchmark target path_to_dir)
     set(configured_chart_json "${CMAKE_CURRENT_BINARY_DIR}/_metabench/${path_to_dir}/chart.json")
     configure_file("${path_to_dir}/chart.json" ${configured_chart_json} @ONLY)
 
+    # We pass metabench.rb file through CMake's `configure_file`, so current
+    # values of CMAKE_CXX_COMPILER and CMAKE_CXX_FLAGS are taken into account.
+    set(configured_metabench_rb "${CMAKE_CURRENT_BINARY_DIR}/_metabench/${path_to_dir}/metabench.rb")
+    configure_file(${METABENCH_RB_PATH} ${configured_metabench_rb} @ONLY)
+
     # Setup the command to generate `path/to/dir/chart.json`.
     add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${path_to_dir}.json"
-        COMMAND ${RUBY_EXECUTABLE} -r fileutils -r tilt/erb -r ${METABENCH_RB_PATH}
+        COMMAND ${RUBY_EXECUTABLE} -r fileutils -r tilt/erb -r ${configured_metabench_rb}
             # We use `.render(binding)` to carry the 'require' of the 'metabench.rb' module.
             -e "chart = Tilt::ERBTemplate.new('${configured_chart_json}').render(binding)"
             -e "FileUtils.mkdir_p(File.dirname('${CMAKE_CURRENT_BINARY_DIR}/${path_to_dir}.json'))"
@@ -98,7 +109,7 @@ function(add_benchmark target path_to_dir)
     # Setup the command to test the benchmark.
     add_test(NAME ${target}
         COMMAND ${CMAKE_COMMAND} -E env METABENCH_TEST_ONLY=true
-                ${RUBY_EXECUTABLE} -r tilt/erb -r ${METABENCH_RB_PATH}
+                ${RUBY_EXECUTABLE} -r tilt/erb -r ${configured_metabench_rb}
                 -e "Tilt::ERBTemplate.new('${configured_chart_json}').render(binding)"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${path_to_dir})
 
@@ -118,7 +129,7 @@ endfunction()
 # copy the `metabench.cmake` module to their project, without worrying
 # about implementation details.
 ##############################################################################
-set(METABENCH_RB_PATH ${CMAKE_CURRENT_BINARY_DIR}/_metabench/metabench.rb)
+set(METABENCH_RB_PATH ${CMAKE_CURRENT_BINARY_DIR}/_metabench/metabench.rb.in)
 file(WRITE ${METABENCH_RB_PATH}
 "require 'benchmark'                                                                               \n"
 "require 'open3'                                                                                   \n"
@@ -128,37 +139,39 @@ file(WRITE ${METABENCH_RB_PATH}
 "require 'tilt/erb'                                                                                \n"
 "                                                                                                  \n"
 "                                                                                                  \n"
-"# This function is meant to be called inside a ERB-based `chart.json` file.                       \n"
-"# `erb_template` should be the name of the `.cpp` file containing the                             \n"
-"# benchmark to run.                                                                               \n"
-"def measure(erb_template, range, cxx: ENV['CXX'], cxxflags: ENV['CXXFLAGS'], env: {})             \n"
-"  raise \"invalid `cxx` parameter (#{cxx})\" if not cxx                                           \n"
-"  range = range.to_a                                                                              \n"
-"  range = [range[0], range[-1]] if ENV['METABENCH_TEST_ONLY'] && range.length >= 2                \n"
+"module Metabench                                                                                  \n"
+"  # This function is meant to be called inside a ERB-based `chart.json` file.                     \n"
+"  # `erb_template` should be the name of the `.cpp` file containing the                           \n"
+"  # benchmark to run.                                                                             \n"
+"  def self.measure(erb_template, range, cxxflags: '', env: {})                                    \n"
+"    cxx = \"\@CMAKE_CXX_COMPILER\@\"                                                              \n"
+"    cxxflags = \"\@CMAKE_CXX_FLAGS\@ #{cxxflags}\"                                                \n"
+"    range = range.to_a                                                                            \n"
+"    range = [range[0], range[-1]] if ENV['METABENCH_TEST_ONLY'] && range.length >= 2              \n"
 "                                                                                                  \n"
-"  progress = ProgressBar.create(format: '%p%% %t | %B |', title: erb_template,                    \n"
-"                                total: range.size,        output: STDERR)                         \n"
-"  range.each do |n|                                                                               \n"
-"    # Evaluate the ERB template with the given environment, and save the                          \n"
-"    # result in a temporary file.                                                                 \n"
-"    code = Tilt::ERBTemplate.new(erb_template).render(nil, n: n, env: env)                        \n"
-"    Tempfile.create(['tmp', '.cpp'], Dir.pwd) do |cpp_file|                                       \n"
-"      begin                                                                                       \n"
-"        # We create exe_file and close it explicitly because if the compilation                   \n"
-"        # fails and the exe_file is deleted by the compiler, we'll raise an                       \n"
-"        # error but Tempfile.create will re-raise an error while trying to                        \n"
-"        # remove the nonexistent file.                                                            \n"
-"        exe_file = Tempfile.new(['tmp', '.o'], Dir.pwd)                                           \n"
-"        cpp_file.write(code) && cpp_file.flush                                                    \n"
-"        data = {n: n}                                                                             \n"
+"    progress = ProgressBar.create(format: '%p%% %t | %B |', title: erb_template,                  \n"
+"                                  total: range.size,        output: STDERR)                       \n"
+"    range.each do |n|                                                                             \n"
+"      # Evaluate the ERB template with the given environment, and save the                        \n"
+"      # result in a temporary file.                                                               \n"
+"      code = Tilt::ERBTemplate.new(erb_template).render(nil, n: n, env: env)                      \n"
+"      Tempfile.create(['tmp', '.cpp'], Dir.pwd) do |cpp_file|                                     \n"
+"        begin                                                                                     \n"
+"          # We create exe_file and close it explicitly because if the compilation                 \n"
+"          # fails and the exe_file is deleted by the compiler, we'll raise an                     \n"
+"          # error but Tempfile.create will re-raise an error while trying to                      \n"
+"          # remove the nonexistent file.                                                          \n"
+"          exe_file = Tempfile.new(['tmp', '.o'], Dir.pwd)                                         \n"
+"          cpp_file.write(code) && cpp_file.flush                                                  \n"
+"          data = {n: n}                                                                           \n"
 "                                                                                                  \n"
-"        # Compile the file and gather timing statistics. The timing statistics                    \n"
-"        # are output to stdout when we compile the file.                                          \n"
-"        data[:time] = Benchmark.realtime {                                                        \n"
-"          command = \"#{cxx} #{cxxflags} -o #{exe_file.path} #{cpp_file.path}\"                   \n"
-"          stdout, stderr, status = Open3.capture3(command)                                        \n"
+"          # Compile the file and gather timing statistics. The timing statistics                  \n"
+"          # are output to stdout when we compile the file.                                        \n"
+"          data[:time] = Benchmark.realtime {                                                      \n"
+"            command = \"#{cxx} #{cxxflags} -o #{exe_file.path} #{cpp_file.path}\"                 \n"
+"            stdout, stderr, status = Open3.capture3(command)                                      \n"
 "                                                                                                  \n"
-"          error_string = <<-EOS                                                                   \n"
+"            error_string = <<-EOS                                                                 \n"
 "compilation error: #{command}                                                                     \n"
 "                                                                                                  \n"
 "stdout                                                                                            \n"
@@ -173,38 +186,39 @@ file(WRITE ${METABENCH_RB_PATH}
 "#{'-'*80}                                                                                         \n"
 "#{code}                                                                                           \n"
 "EOS\n"
-"          raise error_string if not status.success?                                               \n"
-"        }                                                                                         \n"
+"            raise error_string if not status.success?                                             \n"
+"          }                                                                                       \n"
 "                                                                                                  \n"
-"        # Size of the generated executable in KB                                                  \n"
-"        data[:size] = exe_file.size.to_f / 1000                                                   \n"
+"          # Size of the generated executable in KB                                                \n"
+"          data[:size] = exe_file.size.to_f / 1000                                                 \n"
 "                                                                                                  \n"
-"        progress.increment                                                                        \n"
-"        yield data                                                                                \n"
+"          progress.increment                                                                      \n"
+"          yield data                                                                              \n"
 "                                                                                                  \n"
-"      ensure                                                                                      \n"
-"        exe_file.close!                                                                           \n"
+"        ensure                                                                                    \n"
+"          exe_file.close!                                                                         \n"
+"        end                                                                                       \n"
 "      end                                                                                         \n"
 "    end                                                                                           \n"
+"  ensure                                                                                          \n"
+"    progress.finish if progress                                                                   \n"
 "  end                                                                                             \n"
-"ensure                                                                                            \n"
-"  progress.finish if progress                                                                     \n"
-"end                                                                                               \n"
 "                                                                                                  \n"
-"def measure_compile_time(relative_path_to_erb_template, range, **options)                         \n"
-"  result = []                                                                                     \n"
-"  measure(relative_path_to_erb_template, range, **options) do |data|                              \n"
-"    result << [data[:n], data[:time]]                                                             \n"
+"  def self.compile_time(relative_path_to_erb_template, range, **options)                          \n"
+"    result = []                                                                                   \n"
+"    measure(relative_path_to_erb_template, range, **options) do |data|                            \n"
+"      result << [data[:n], data[:time]]                                                           \n"
+"    end                                                                                           \n"
+"    return result                                                                                 \n"
 "  end                                                                                             \n"
-"  return result                                                                                   \n"
-"end                                                                                               \n"
 "                                                                                                  \n"
-"def measure_exe_size(relative_path_to_erb_template, range, **options)                             \n"
-"  result = []                                                                                     \n"
-"  measure(relative_path_to_erb_template, range, **options) do |data|                              \n"
-"    result << [data[:n], data[:size]]                                                             \n"
+"  def self.executable_size(relative_path_to_erb_template, range, **options)                       \n"
+"    result = []                                                                                   \n"
+"    measure(relative_path_to_erb_template, range, **options) do |data|                            \n"
+"      result << [data[:n], data[:size]]                                                           \n"
+"    end                                                                                           \n"
+"    return result                                                                                 \n"
 "  end                                                                                             \n"
-"  return result                                                                                   \n"
 "end                                                                                               \n"
 )
 ##############################################################################
@@ -220,32 +234,65 @@ file(WRITE ${METABENCH_RB_PATH}
 # only have to copy the `metabench.cmake` module to their project,
 # without worrying about implementation details.
 #
-# We also pre-download the `highcharts.js` library so that connectivity
+# We also try to pre-download the `highcharts.js` library so that connectivity
 # is only required when running the CMake configuration step, but not
-# for visualizing the benchmarks thereafter.
+# for visualizing the benchmarks thereafter. We hardcode the content of
+# `highcharts.js` in the file so that the generated HTML file is self-
+# standing, which can be useful for sharing benchmarks with others.
 ##############################################################################
 set(CHART_TEMPLATE_HTML_PATH ${CMAKE_CURRENT_BINARY_DIR}/_metabench/chart_template.html)
 set(HIGHCHARTS_JS_PATH ${CMAKE_CURRENT_BINARY_DIR}/_metabench/highcharts.js)
-file(DOWNLOAD "https://code.highcharts.com/highcharts.js" ${HIGHCHARTS_JS_PATH})
+set(HIGHCHARTS_JS_URL "https://code.highcharts.com/highcharts.js")
+file(DOWNLOAD ${HIGHCHARTS_JS_URL} ${HIGHCHARTS_JS_PATH})
+file(READ ${HIGHCHARTS_JS_PATH} HIGHCHARTS_JS)
+if ("${HIGHCHARTS_JS}" STREQUAL "")
+    message(WARNING
+        "metabench.cmake: The download of a JavaScript library for chart "
+        "visualization failed. The library will be required by each HTML "
+        "chart instead, so connectivity will be required to view these.")
+    set(HIGHCHARTS_JS "<script src='${HIGHCHARTS_JS_URL}'></script>")
+else()
+    set(HIGHCHARTS_JS "<script type='text/javascript'>${HIGHCHARTS_JS}</script>")
+endif()
 file(WRITE ${CHART_TEMPLATE_HTML_PATH}
-"<!DOCTYPE html>                                                                                   \n"
-"<html>                                                                                            \n"
-"<head>                                                                                            \n"
-"  <script type='text/javascript' src='${HIGHCHARTS_JS_PATH}'></script>                            \n"
-"</head>                                                                                           \n"
-"<body>                                                                                            \n"
-"  <div id='container'><%= data %></div>                                                           \n"
-"  <script type='text/javascript'>                                                                 \n"
-"    (function () {                                                                                \n"
-"      var container = document.getElementById('container');                                       \n"
-"      var options = JSON.parse(container.innerHTML);                                              \n"
-"      options.chart = options.chart || {};                                                        \n"
-"      options.chart.renderTo = container;                                                         \n"
-"      window.chart = new Highcharts.Chart(options);                                               \n"
-"    })();                                                                                         \n"
-"  </script>                                                                                       \n"
-"</body>                                                                                           \n"
-"</html>                                                                                           \n"
+"<!DOCTYPE html>                                                                                    \n"
+"<html>                                                                                             \n"
+"<head>                                                                                             \n"
+"  ${HIGHCHARTS_JS}                                                                                 \n"
+"</head>                                                                                            \n"
+"<body>                                                                                             \n"
+"  <div id='container'><%= data %></div>                                                            \n"
+"  <script type='text/javascript'>                                                                  \n"
+"    (function () {                                                                                 \n"
+"      var container = document.getElementById('container');                                        \n"
+"      var options = JSON.parse(container.innerHTML);                                               \n"
+"                                                                                                   \n"
+"      // Set different default options                                                             \n"
+"      options.chart = options.chart || { zoomType: 'xy' };                                         \n"
+"      options.chart.renderTo = container;                                                          \n"
+"                                                                                                   \n"
+"      options.plotOptions = options.plotOptions || {};                                             \n"
+"      options.plotOptions.series = options.plotOptions.series || {};                               \n"
+"      options.plotOptions.series.marker = options.plotOptions.series.marker || { enabled: false }; \n"
+"                                                                                                   \n"
+"      if (options.series.stickyTracking == undefined) {                                            \n"
+"        options.series.stickyTracking = false;                                                     \n"
+"      }                                                                                            \n"
+"                                                                                                   \n"
+"      if (options.legend == undefined) {                                                           \n"
+"        options.legend = {                                                                         \n"
+"          layout: 'vertical',                                                                      \n"
+"          align: 'right',                                                                          \n"
+"          verticalAlign: 'middle',                                                                 \n"
+"          borderWidth: 0                                                                           \n"
+"        };                                                                                         \n"
+"      }                                                                                            \n"
+"                                                                                                   \n"
+"      window.chart = new Highcharts.Chart(options);                                                \n"
+"    })();                                                                                          \n"
+"  </script>                                                                                        \n"
+"</body>                                                                                            \n"
+"</html>                                                                                            \n"
 )
 ##############################################################################
 # end index.html
