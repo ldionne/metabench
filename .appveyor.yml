@@ -4,9 +4,6 @@
 
 shallow_clone: true
 
-os:
-  - Visual Studio 2015
-
 build:
   verbosity: detailed
 
@@ -14,38 +11,7 @@ configuration:
   - Debug
 
 install:
-  ############################################################################
-  # All external dependencies are installed in C:\projects\deps
-  ############################################################################
-  - mkdir C:\projects\deps
-  - cd C:\projects\deps
-
-  ############################################################################
-  # Install Ninja
-  ############################################################################
-  - set NINJA_URL="https://github.com/ninja-build/ninja/releases/download/v1.6.0/ninja-win.zip"
-  - appveyor DownloadFile %NINJA_URL% -FileName ninja.zip
-  - 7z x ninja.zip -oC:\projects\deps\ninja > nul
-  - set PATH=C:\projects\deps\ninja;%PATH%
-  - ninja --version
-
-  ############################################################################
-  # Install a recent CMake
-  ############################################################################
-  - set CMAKE_URL="https://cmake.org/files/v3.4/cmake-3.4.0-win32-x86.zip"
-  - appveyor DownloadFile %CMAKE_URL% -FileName cmake.zip
-  - 7z x cmake.zip -oC:\projects\deps\cmake > nul
-  - set PATH=C:\projects\deps\cmake\bin;%PATH%
-  - cmake --version
-
-  ############################################################################
-  # Install a pre-built Clang-cl
-  ############################################################################
-  - set LLVM_URL="https://www.dropbox.com/s/caol8ihddfwqs31/LLVM-3.7.0-win64.zip?dl=1"
-  - appveyor DownloadFile %LLVM_URL% -FileName llvm.zip
-  - 7z x llvm.zip -oC:\projects\deps\llvm > nul
-  - set PATH=C:\projects\deps\llvm\bin;%PATH%
-  - clang-cl -v
+  choco install ninja
 
   ############################################################################
   # Use a more recent Ruby by default, and install required gems
@@ -65,7 +31,7 @@ build_script:
   # Run the example
   - mkdir example\build
   - cd example\build
-  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+  - cmake .. -GNinja
   - cd ..\..
   - cmake --build example\build --target path.to.benchmark
 
@@ -74,6 +40,6 @@ build_script:
     FOR %dir IN (absolute_paths ctest_target) DO
       mkdir test\%dir%\build
       cd test\%dir%\build
-      cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+      cmake .. -GNinja
       cd ..\..\..
       cmake --build test\%dir%\build --target check
