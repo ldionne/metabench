@@ -11,7 +11,7 @@ configuration:
   - Debug
 
 install:
-  choco install ninja
+  - choco install ninja
 
   ############################################################################
   # Use a more recent Ruby by default, and install required gems
