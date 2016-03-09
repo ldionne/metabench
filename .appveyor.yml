@@ -3,13 +3,11 @@
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 shallow_clone: true
+platform: x64
 
 branches:
   except:
     - /pr\/.+/
-
-os:
-  - Visual Studio 2015
 
 build:
   verbosity: detailed
@@ -18,29 +16,13 @@ configuration:
   - Debug
 
 install:
+  - choco install ninja
+
   ############################################################################
   # All external dependencies are installed in C:\projects\deps
   ############################################################################
   - mkdir C:\projects\deps
   - cd C:\projects\deps
-
-  ############################################################################
-  # Install Ninja
-  ############################################################################
-  - set NINJA_URL="https://github.com/ninja-build/ninja/releases/download/v1.6.0/ninja-win.zip"
-  - appveyor DownloadFile %NINJA_URL% -FileName ninja.zip
-  - 7z x ninja.zip -oC:\projects\deps\ninja > nul
-  - set PATH=C:\projects\deps\ninja;%PATH%
-  - ninja --version
-
-  ############################################################################
-  # Install a recent CMake
-  ############################################################################
-  - set CMAKE_URL="https://cmake.org/files/v3.4/cmake-3.4.0-win32-x86.zip"
-  - appveyor DownloadFile %CMAKE_URL% -FileName cmake.zip
-  - 7z x cmake.zip -oC:\projects\deps\cmake > nul
-  - set PATH=C:\projects\deps\cmake\bin;%PATH%
-  - cmake --version
 
   ############################################################################
   # Install a pre-built Clang-cl
@@ -64,20 +46,19 @@ before_build:
   - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
   - cd C:\projects\metabench
 
-
 build_script:
   # Run the example
   - mkdir example\build
   - cd example\build
-  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+  - cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_BUILD_TYPE=%CONFIGURATION%
   - cd ..\..
-  - cmake --build example\build --target path.to.benchmark
+  - cmake --build example\build --target path.to.benchmark --config %CONFIGURATION%
 
   # Run the unit tests
   - |
     FOR %dir IN (absolute_paths ctest_target env local_header n) DO
       mkdir test\%dir%\build
       cd test\%dir%\build
-      cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl
+      cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_BUILD_TYPE=%CONFIGURATION%
       cd ..\..\..
-      cmake --build test\%dir%\build --target check
+      cmake --build test\%dir%\build --target check --config %CONFIGURATION%
