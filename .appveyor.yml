@@ -14,8 +14,8 @@ build:
 
 environment:
     matrix:
-      - CMAKE_GENERATOR: "Ninja"
-      # - CMAKE_GENERATOR: "NMake Makefiles"
+      # - CMAKE_GENERATOR: "Ninja"
+      - CMAKE_GENERATOR: "NMake Makefiles"
       # - CMAKE_GENERATOR: "Unix Makefiles"
       # - CMAKE_GENERATOR: "MSYS Makefiles"
 
