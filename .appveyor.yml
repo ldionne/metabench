@@ -14,8 +14,8 @@ build:
 
 environment:
     matrix:
-      - CMAKE_GENERATOR: "Ninja"
-      # - CMAKE_GENERATOR: "NMake Makefiles"
+      # - CMAKE_GENERATOR: "Ninja"
+      - CMAKE_GENERATOR: "NMake Makefiles"
       # - CMAKE_GENERATOR: "Unix Makefiles"
       # - CMAKE_GENERATOR: "MSYS Makefiles"
 
@@ -35,6 +35,6 @@ before_build:
 build_script:
   - mkdir build
   - cd build
-  - cmake .. -G%CMAKE_GENERATOR%
+  - cmake .. -G"%CMAKE_GENERATOR%"
   - cmake --build .
   - ctest --output-on-failure -VV
