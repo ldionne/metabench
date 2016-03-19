@@ -94,4 +94,5 @@ add_subdirectory(hetero/make)
 add_subdirectory(hetero/transform)
 
 add_subdirectory(type/at)
+add_subdirectory(type/reverse)
 add_subdirectory(type/transform)
