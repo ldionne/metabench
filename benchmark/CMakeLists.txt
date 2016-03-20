@@ -161,10 +161,12 @@ endif()
 
 add_custom_target(benchmarks)
 
-add_subdirectory(hetero/at)
-add_subdirectory(hetero/make)
-add_subdirectory(hetero/transform)
+file(GLOB benchmark_dirs
+    LIST_DIRECTORIES true
+    RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    "hetero/*" "type/*"
+)
 
-add_subdirectory(type/at)
-add_subdirectory(type/reverse)
-add_subdirectory(type/transform)
+foreach(benchmark_dir ${benchmark_dirs})
+    add_subdirectory(${benchmark_dir})
+endforeach()
