@@ -129,7 +129,7 @@ function(metabench_add_dataset target path_to_template range)
     )
 endfunction()
 
-# metabench_add_benchmark(target [ALL] DATASETS dataset1 [dataset2 [dataset3 [...]]] [CHART path/to/json])
+# metabench_add_benchmark(target [ALL] DATASETS dataset1 [dataset2 [dataset3 [...]]] [CHART path/to/json] [FILENAME name])
 #
 #   Creates a target for running a compile-time benchmark. After issuing this
 #   command, running the target named `target` will cause each `dataset` to be
@@ -159,10 +159,15 @@ endfunction()
 #       The path to a JSON file containing data for rendering the chart in the
 #       format specified by NVD3.
 #
+#   [FILENAME name]:
+#       A name used for the output files. The JSON and HTML files generated will
+#       be named ${name}.json and ${name}.html, respectively.
+#       Defaults to `target`.
+#
 # [1]: http://nvd3.org/
 function(metabench_add_benchmark target)
     set(options ALL)
-    set(one_value_args CHART)
+    set(one_value_args CHART FILENAME)
     set(multi_value_args DATASETS)
     cmake_parse_arguments(ARGS "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -174,14 +179,18 @@ function(metabench_add_benchmark target)
         set(ARGS_CHART "${CMAKE_CURRENT_SOURCE_DIR}/${ARGS_CHART}")
     endif()
 
+    if (NOT ARGS_FILENAME)
+        set(ARGS_FILENAME ${target})
+    endif()
+
     set(data)
     foreach(dataset ${ARGS_DATASETS})
         get_target_property(output_dir ${dataset} RUNTIME_OUTPUT_DIRECTORY)
         list(APPEND data "${output_dir}/${dataset}.json")
     endforeach()
 
-    set(json_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.json")
-    set(html_path "${CMAKE_CURRENT_BINARY_DIR}/${target}.html")
+    set(json_path "${CMAKE_CURRENT_BINARY_DIR}/${ARGS_FILENAME}.json")
+    set(html_path "${CMAKE_CURRENT_BINARY_DIR}/${ARGS_FILENAME}.html")
     add_custom_command(
         OUTPUT "${json_path}" "${html_path}"
         COMMAND ${RUBY_EXECUTABLE} -r erb -r json
