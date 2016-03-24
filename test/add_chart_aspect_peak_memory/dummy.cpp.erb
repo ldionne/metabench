@@ -1,0 +1,25 @@
+template <typename Left, typename Right>
+struct expr {
+    Left left; Right right;
+    void operator()() const {
+        left(); right();
+    }
+};
+
+template <typename Left, typename Right>
+expr<Left, Right> operator+(Left const& left, Right const& right) {
+    return {left, right};
+}
+
+template <int>
+struct Leaf {
+    void operator()() const { }
+};
+
+int main() {
+    Leaf<1> a;
+    Leaf<2> b;
+
+    (((a + b) + (a + b)) + ((a + b) + (a + b)) +
+        ((a + b) + (a + b)) + ((a + b) + (a + b)))();
+}

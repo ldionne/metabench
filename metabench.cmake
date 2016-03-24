@@ -71,6 +71,9 @@ set(METABENCH_DIR "${CMAKE_CURRENT_BINARY_DIR}/_metabench")
 #         measurements, but Metabench's resolution is too low for precision
 #         benchmarking. To measure this, Metabench runs the built executable
 #         with no arguments, so the program should support being run this way.
+#       - Peak memory usage of the compiler in KB. This is the approximate peak
+#         size of the RSS (Resident Set Size) used by the compiler (not the
+#         linker) when compiling the `.cpp` file.
 #
 #   Parameters
 #   ----------
@@ -212,7 +215,7 @@ function(metabench_add_dataset target path_to_template range)
 endfunction()
 
 # metabench_add_chart(target [ALL]
-#                     [ASPECT COMPILATION_TIME|LINK_TIME|EXECUTION_TIME|EXECUTABLE_SIZE]
+#                     [ASPECT COMPILATION_TIME|LINK_TIME|EXECUTION_TIME|EXECUTABLE_SIZE|PEAK_MEMORY]
 #                     [TITLE title]
 #                     [SUBTITLE subtitle]
 #                     [XLABEL label] [YLABEL label]
@@ -236,7 +239,7 @@ endfunction()
 #       This is the same behaviour as `add_custom_target` used with the `ALL`
 #       keyword.
 #
-#   [ASPECT COMPILATION_TIME|LINK_TIME|EXECUTION_TIME|EXECUTABLE_SIZE]:
+#   [ASPECT COMPILATION_TIME|LINK_TIME|EXECUTION_TIME|EXECUTABLE_SIZE|PEAK_MEMORY]:
 #       The aspect of the datasets to display on the chart. When this argument
 #       is provided, the chart will adopt reasonable default values for the
 #       axis labels and other similar settings. However, any setting set
@@ -384,6 +387,9 @@ file(WRITE "${METABENCH_RB_PATH}"
 "  result['compilation_time'] = stdout.match(/\\[compilation time: (.+)\\]/i).captures[0].to_f            \n"
 "  result['link_time'] = stdout.match(/\\[link time: (.+)\\]/i).captures[0].to_f                          \n"
 "                                                                                                         \n"
+"  # Peak memory usage                                                                                    \n"
+"  result['memory_peak'] = stdout.match(/\\[peak memory usage: (.+)\\]/i).captures[0].to_f                \n"
+"                                                                                                         \n"
 "  # Size of the generated executable in KB                                                               \n"
 "  result['executable_size'] = File.size(exe_file).to_f / 1000                                            \n"
 "                                                                                                         \n"
@@ -429,6 +435,7 @@ file(WRITE "${METABENCH_RB_PATH}"
 "      datum['link_times']        = results.map { |r| (scale)*r['link_time'] }                            \n"
 "      datum['executable_size']   = results.map { |r| (scale)*r['executable_size'] }.first                \n"
 "      datum['execution_times']   = results.map { |r| (scale)*r['execution_time'] }                       \n"
+"      datum['memory_peaks']      = results.map { |r| (scale)*r['memory_peak'] }                          \n"
 "      return datum                                                                                       \n"
 "    }                                                                                                    \n"
 "    code = render(erb_template, n, env)                                                                  \n"
@@ -448,18 +455,76 @@ file(WRITE "${METABENCH_RB_PATH}"
 ################################################################################
 
 ################################################################################
+# memusg.rb
+#
+# This script runs the command line given to it as an argument and monitors
+# the peak memory usage in KB. It then prints that to standard output.
+################################################################################
+set(MEMUSG_RB_PATH "${METABENCH_DIR}/memusg.rb")
+file(WRITE "${MEMUSG_RB_PATH}"
+"module OS                                                                        \n"
+"  def OS.windows?                                                                \n"
+"    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil              \n"
+"  end                                                                            \n"
+"  def OS.mac?                                                                    \n"
+"   (/darwin/ =~ RUBY_PLATFORM) != nil                                            \n"
+"  end                                                                            \n"
+"  def OS.unix?                                                                   \n"
+"    !OS.windows?                                                                 \n"
+"  end                                                                            \n"
+"  def OS.linux?                                                                  \n"
+"    OS.unix? and not OS.mac?                                                     \n"
+"  end                                                                            \n"
+"end                                                                              \n"
+"                                                                                 \n"
+"if OS.mac?                                                                       \n"
+"  def memusg(pgid)                                                               \n"
+"    `/bin/ps -o rss= -g #{pgid}`.to_i                                            \n"
+"  end                                                                            \n"
+"elsif OS.linux?                                                                  \n"
+"  def memusg(pgid)                                                               \n"
+"    `/bin/ps -o rss= -#{pgid}`.to_i                                              \n"
+"  end                                                                            \n"
+"else                                                                             \n"
+"  throw %{Unsupported platform #{RUBY_PLATFORM}}                                 \n"
+"end                                                                              \n"
+"                                                                                 \n"
+"pid = Process.spawn(*ARGV)                                                       \n"
+"Process.detach(pid) # Make sure the child process does not become a zombie       \n"
+"peak = 0                                                                         \n"
+"# Loop until getpgid throws ESRCH, which means the process is not alive anymore  \n"
+"begin                                                                            \n"
+"  while true                                                                     \n"
+"    pgid = Process.getpgid(pid)                                                  \n"
+"    peak = [peak, memusg(pgid)].max                                              \n"
+"    sleep 0.01                                                                   \n"
+"  end                                                                            \n"
+"rescue Errno::ESRCH                                                              \n"
+"end                                                                              \n"
+"                                                                                 \n"
+"puts %{[peak memory usage: #{peak}]}                                             \n"
+)
+################################################################################
+# end memusg.rb
+################################################################################
+
+################################################################################
 # compile.rb
 #
-# This script is used to launch the compiler and measure the compilation time.
+# This script is used to launch the compiler whilst measuring compilation time
+# and other aspects.
 ################################################################################
 set(COMPILE_RB_PATH "${METABENCH_DIR}/compile.rb")
 file(WRITE "${COMPILE_RB_PATH}"
 "require 'benchmark'                                                              \n"
 "require 'open3'                                                                  \n"
 "stdout = stderr = status = nil                                                   \n"
-"time = Benchmark.measure { stdout, stderr, status = Open3.capture3(*ARGV) }.total\n"
+"command_line = ['${RUBY_EXECUTABLE}', '--', '${MEMUSG_RB_PATH}'] + ARGV          \n"
+"time = Benchmark.measure {                                                       \n"
+"  stdout, stderr, status = Open3.capture3(*command_line)                         \n"
+"}.total                                                                          \n"
 "$stdout.puts(stdout)                                                             \n"
-"$stdout.puts(%{[compilation command: #{ARGV.join(' ')}]})                        \n"
+"$stdout.puts(%{[compilation command: #{command_line.join(' ')}]})                \n"
 "$stdout.puts(%{[compilation time: #{time}]})                                     \n"
 "$stderr.puts(stderr)                                                             \n"
 "exit(status.success?)                                                            \n"
@@ -555,6 +620,7 @@ file(WRITE "${CHART_HTML_ERB_PATH}"
 "      //           link_times:        [<link times in seconds>],                                                           \n"
 "      //           executable_size:   <executable size in KB>,                                                             \n"
 "      //           execution_times:   [<execution times in seconds>]                                                       \n"
+"      //           memory_peaks:      [<peak memory usage measurements in KB>]                                             \n"
 "      //       },                                                                                                          \n"
 "      //       total: <same as base, but with METABENCH defined>                                                           \n"
 "      //   }]                                                                                                              \n"
@@ -610,8 +676,15 @@ file(WRITE "${CHART_HTML_ERB_PATH}"
 "               tickFormat: function(val){ return d3.format('.2f')(val) + 's'; }                                            \n"
 "             });                                                                                                           \n"
 "      }                                                                                                                    \n"
+"      else if (aspect == 'PEAK_MEMORY') {                                                                                  \n"
+"        chart.y(function(datum){ return median(datum.total.memory_peaks); })                                               \n"
+"             .yAxis.options({                                                                                              \n"
+"               axisLabel: customSettings.YLABEL || 'Peak memory usage',                                                    \n"
+"               tickFormat: function(val){ return d3.format('.0f')(val) + 'kb'; }                                           \n"
+"             });                                                                                                           \n"
+"      }                                                                                                                    \n"
 "                                                                                                                           \n"
-"      chart.interpolate('cardinal').useInteractiveGuideline(true);                                                            \n"
+"      chart.interpolate('cardinal').useInteractiveGuideline(true);                                                         \n"
 "      d3.select('#chart').datum(data).call(chart);                                                                         \n"
 "      var plot = d3.select('#chart > g');                                                                                  \n"
 "                                                                                                                           \n"
