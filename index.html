@@ -54,6 +54,10 @@ compilers:
         margin: 0;
       }
 
+      .navbar-right > li {
+        float: left;
+      }
+
       .panel-group .panel-footer {
         background-color: initial;
         padding: 0px 10px 4px;
@@ -61,8 +65,16 @@ compilers:
         text-align: right;
       }
 
-      .navbar-right > li {
-        float: left;
+      .panel-group .panel-collapse.collapse {
+        display: block;
+      }
+
+      .panel-group .panel-collapse.collapse * {
+        visibility: hidden;
+      }
+
+      .panel-group .panel-collapse.collapse.in * {
+        visibility: visible;
       }
 
       #content {
@@ -156,7 +168,7 @@ compilers:
                     <a data-toggle="collapse" href="#chart{{ forloop.index }}">{{ benchmark.url | split: "/" | shift: 3 | pop | join: "/" }}</a>
                   </span>
                 </div>
-                <div id="chart{{ forloop.index }}" class="panel-collapse collapse">
+                <div id="chart{{ forloop.index }}" class="panel-collapse collapse" style="height: 0px">
                   <iframe class="panel-body" source="{{ site.baseurl }}{{ benchmark.url }}" scrolling="no"></iframe>
                  <div class="panel-footer text-muted">Last updated on {{ benchmark.timestamp }}</div>
                 </div>
@@ -210,8 +222,8 @@ compilers:
     <script src="{{ site.baseurl }}/jquery-1.11.3.min.js"></script>
     <script src="{{ site.baseurl }}/bootstrap.min.js"></script>
     <script>
-      function load(iframes){
-        var iframes = $(iframes).find("iframe:not([src])[source]");
+      function load(charts){
+        var iframes = $(charts).find("iframe:not([src])[source]");
 
         if(iframes.length <= 0)
           return;
