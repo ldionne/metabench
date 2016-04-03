@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(datasets)
 add_dataset(datasets dataset.type.transform.metal.list    metal.list.cpp.erb  "(0..500).step(10)")
-add_dataset(datasets dataset.type.transform.mpl.list      mpl.list.cpp.erb    "(0..50).step(5)")
-add_dataset(datasets dataset.type.transform.mpl.vector    mpl.vector.cpp.erb  "(0..50).step(5)")
+add_dataset(datasets dataset.type.transform.mpl.list      mpl.list.cpp.erb    "(0..50).step(1)")
+add_dataset(datasets dataset.type.transform.mpl.vector    mpl.vector.cpp.erb  "(0..50).step(1)")
 
 metabench_add_benchmark(benchmark.type.transform DATASETS ${datasets} FILENAME index)
 add_dependencies(benchmarks benchmark.type.transform)
