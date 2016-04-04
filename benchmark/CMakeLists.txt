@@ -11,7 +11,6 @@ option(METABENCH_MPL        "Benchmark MPL"     ON)
 
 include(ExternalProject)
 include(CheckCXXCompilerFlag)
-include(benchmark/FindCXXStandard)
 
 if (METABENCH_FUSION OR METABENCH_MPL)
     find_package(Boost QUIET)
