@@ -118,53 +118,98 @@ if (METABENCH_METAL)
 endif()
 
 macro(add_dataset datasets dataset path_to_template range)
-    string(REGEX REPLACE "[^.]+[.][^.]+[.][^.]+[.](.*)" "\\1" name ${dataset})
+    set(_required_features)
+    set(_dependencies)
+    set(_enabled OFF)
+    set(_median_of 1)
 
     if(${dataset} MATCHES "brigand\\.")
-        if (NOT (${CXX_STANDARD} LESS 2011) AND ${METABENCH_BRIGAND})
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name})
-            add_dependencies(${dataset} Brigand)
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ${METABENCH_BRIGAND})
+        list(APPEND _required_features
+            cxx_alias_templates
+            cxx_decltype
+            cxx_static_assert
+            cxx_variadic_templates
+            # TODO: Complete this
+        )
+        list(APPEND _dependencies Brigand)
     elseif(${dataset} MATCHES "fusion\\.")
-        if (${METABENCH_FUSION})
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name} MEDIAN_OF 3)
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ${METABENCH_FUSION})
+        set(_median_of 3)
     elseif(${dataset} MATCHES "hana\\.")
-        if (NOT (${CXX_STANDARD} LESS 2014) AND ${METABENCH_HANA})
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name})
-            add_dependencies(${dataset} Hana)
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ${METABENCH_HANA})
+        list(APPEND _required_features
+            cxx_alias_templates
+            cxx_auto_type
+            cxx_constexpr
+            cxx_decltype
+            cxx_decltype_auto
+            cxx_defaulted_move_initializers
+            cxx_delegating_constructors
+            cxx_deleted_functions
+            cxx_generic_lambdas
+            cxx_inheriting_constructors
+            cxx_inline_namespaces
+            cxx_local_type_template_args
+            cxx_reference_qualified_functions
+            cxx_relaxed_constexpr
+            cxx_right_angle_brackets
+            cxx_rvalue_references
+            cxx_trailing_return_types
+            cxx_user_literals
+            cxx_variable_templates
+            cxx_variadic_macros
+            cxx_variadic_templates
+        )
+        list(APPEND _dependencies Hana)
     elseif(${dataset} MATCHES "meta\\.")
-        if (NOT (${CXX_STANDARD} LESS 2011) AND ${METABENCH_META})
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name})
-            add_dependencies(${dataset} Meta)
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ${METABENCH_META})
+        list(APPEND _required_features
+            cxx_alias_templates
+            # TODO: Complete this
+        )
+        list(APPEND _dependencies Meta)
     elseif(${dataset} MATCHES "metal\\.")
-        if (NOT (${CXX_STANDARD} LESS 2011) AND ${METABENCH_METAL})
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name})
-            add_dependencies(${dataset} Metal)
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ${METABENCH_METAL})
+        list(APPEND _required_features
+            cxx_alias_templates
+            # TODO: Complete this
+        )
+        list(APPEND _dependencies Metal)
     elseif (${dataset} MATCHES "mpl\\.")
-        if (${METABENCH_MPL})
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name} MEDIAN_OF 3)
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ${METABENCH_MPL})
+        set(_median_of 3)
     elseif (${dataset} MATCHES "std\\.")
-        if (NOT (${CXX_STANDARD} LESS 2011))
-            metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name})
-            list(APPEND ${datasets} ${dataset})
-        endif()
+        set(_enabled ON)
     else()
         message(FATAL_ERROR
             "The dataset named '${dataset}' does not appear to benchmark any "
             "known metaprogramming library."
         )
     endif()
+
+    set(_all_cxx_features_supported ON)
+    foreach(_feature IN LISTS _required_features)
+        if (NOT "${_feature}" MATCHES "${CMAKE_CXX_COMPILE_FEATURES}")
+            set(_all_cxx_features_supported OFF)
+            break()
+        endif()
+    endforeach()
+
+    if (${_enabled} AND ${_all_cxx_features_supported})
+        string(REGEX REPLACE "[^.]+[.][^.]+[.][^.]+[.](.*)" "\\1" name ${dataset})
+        metabench_add_dataset(${dataset} ${path_to_template} ${range} NAME ${name} MEDIAN_OF ${_median_of})
+        if (_dependencies)
+            add_dependencies(${dataset} ${_dependencies})
+        endif()
+        list(APPEND ${datasets} ${dataset})
+    endif()
+
+    unset(_required_features)
+    unset(_dependencies)
+    unset(_enabled)
+    unset(_median_of)
+    unset(_all_cxx_features_supported)
 endmacro()
 
 set(cxx_flag -ftemplate-depth=5000)
