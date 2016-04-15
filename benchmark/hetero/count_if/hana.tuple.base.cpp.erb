@@ -1,0 +1,24 @@
+// Copyright Louis Dionne 2013-2016
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#include <boost/hana/count_if.hpp>
+#include <boost/hana/tuple.hpp>
+
+#include <type_traits>
+namespace hana = boost::hana;
+
+
+struct is_even {
+    template <typename N>
+    constexpr bool operator()(N const&) const {
+        return N::value % 2 == 0;
+    }
+};
+
+int main() {
+    auto ints = hana::make_tuple(
+        <%= (1..n).map { |i| "std::integral_constant<int, #{i}>{}" }.join(', ') %>
+    );
+    (void)ints;
+}
