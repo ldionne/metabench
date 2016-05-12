@@ -1,0 +1,22 @@
+// Copyright Louis Dionne 2016
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#define BRIGAND_NO_BOOST_SUPPORT
+#include <brigand/brigand.hpp>
+
+<% env[:k].times do |k| %>
+
+using <%= "xs#{k}" %> = brigand::list<<%=
+    xs = ((k*n+1)..(k*n+n)).map { |i| "brigand::int32_t<#{i}>" }
+    rng = Random.new(k)
+    xs.shuffle(random: rng).join(', ')
+%>>;
+
+#if defined(METABENCH)
+using <%= "result#{k}" %> = brigand::sort<<%= "xs#{k}" %>>;
+#endif
+
+<% end %>
+
+int main() { }

@@ -1,0 +1,21 @@
+// Copyright Bruno Dutra 2016
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#include <metal.hpp>
+
+<% env[:k].times do |k| %>
+
+using <%= "xs#{k}" %> = metal::list<<%=
+    xs = ((k*n+1)..(k*n+n)).map { |i| "metal::number<#{i}>" }
+    rng = Random.new(k)
+    xs.shuffle(random: rng).join(', ')
+%>>;
+
+#if defined(METABENCH)
+using <%= "result#{k}" %> = metal::sort<<%= "xs#{k}" %>, metal::lambda<metal::less>>;
+#endif
+
+<% end %>
+
+int main() { }
