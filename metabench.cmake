@@ -300,6 +300,7 @@ function(metabench_add_chart target)
     else()
         add_custom_target(${target} DEPENDS "${ARGS_OUTPUT}")
     endif()
+    set_target_properties(${target} PROPERTIES FOLDER "charts")
 endfunction()
 
 ################################################################################

@@ -10,5 +10,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND CMAKE_CXX_COMPILER_VERSION VERSION
 else()
     function(Std_add_dataset dataset)
         metabench_add_dataset(${dataset} ${ARGN} MEDIAN_OF 3)
+        set_target_properties(${dataset} PROPERTIES FOLDER "datasets/STL")
     endfunction()
 endif()
