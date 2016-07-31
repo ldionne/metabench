@@ -7,6 +7,7 @@
     #define BOOST_MPL_LIMIT_VECTOR_SIZE <%= ((n + 9) / 10) * 10 %>
 <% end %>
 
+#if defined(METABENCH)
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/find_if.hpp>
 #include <boost/mpl/bool.hpp>
@@ -22,7 +23,6 @@ using vector = mpl::vector<
     <%= (1..n).map { |i| "mpl::int_<#{i}>" }.join(', ') %>
 >;
 
-#if defined(METABENCH)
 using result = mpl::find_if<vector, is_last>::type;
 #endif
 
