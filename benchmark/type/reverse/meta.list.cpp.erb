@@ -2,6 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
+#if defined(METABENCH)
 #include <meta/meta.hpp>
 
 template<int> struct x;
@@ -10,7 +11,6 @@ using list = meta::list<
     <%= (1..n).map { |i| "x<#{i}>" }.join(', ') %>
 >;
 
-#if defined(METABENCH)
 using result = meta::reverse<list>;
 #endif
 

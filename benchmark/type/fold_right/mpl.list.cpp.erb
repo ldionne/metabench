@@ -7,6 +7,7 @@
     #define BOOST_MPL_LIMIT_LIST_SIZE <%= ((n + 9) / 10) * 10 %>
 <% end %>
 
+#if defined(METABENCH)
 #include <boost/mpl/list.hpp>
 #include <boost/mpl/reverse_fold.hpp>
 namespace mpl = boost::mpl;
@@ -26,7 +27,6 @@ using list = mpl::list<
     <%= (1..n).map { |i| "x<#{i}>" }.join(', ') %>
 >;
 
-#if defined(METABENCH)
 using result = mpl::reverse_fold<list, state, f>::type;
 #endif
 

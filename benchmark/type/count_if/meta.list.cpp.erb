@@ -2,6 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
+#if defined(METABENCH)
 #include <meta/meta.hpp>
 
 struct is_even {
@@ -13,7 +14,6 @@ using list = meta::list<
     <%= (1..n).map { |i| "meta::int_<#{i}>" }.join(', ') %>
 >;
 
-#if defined(METABENCH)
 using result = meta::count_if<list, is_even>;
 #endif
 

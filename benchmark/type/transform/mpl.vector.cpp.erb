@@ -7,6 +7,7 @@
     #define BOOST_MPL_LIMIT_VECTOR_SIZE <%= ((n + 9) / 10) * 10 %>
 <% end %>
 
+#if defined(METABENCH)
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/transform.hpp>
 namespace mpl = boost::mpl;
@@ -22,7 +23,6 @@ template<int> struct x;
 
 using vector = mpl::vector<<%= (1..n).map { |i| "x<#{i}>" }.join(', ') %>>;
 
-#if defined(METABENCH)
 using result = mpl::transform<vector, f>::type;
 #endif
 

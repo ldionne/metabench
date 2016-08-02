@@ -7,12 +7,12 @@
     #define BOOST_MPL_LIMIT_LIST_SIZE <%= ((n + 9) / 10) * 10 %>
 <% end %>
 
+#if defined(METABENCH)
 #include <boost/mpl/list.hpp>
 namespace mpl = boost::mpl;
 
 template<int> struct x;
 
-#if defined(METABENCH)
 using list = mpl::list<<%= (1..n).map { |i| "x<#{i}>" }.join(', ') %>>;
 #endif
 
