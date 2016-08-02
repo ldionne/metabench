@@ -33,4 +33,5 @@ foreach(dir ${test_dirs})
     add_test(NAME ${target}
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${target}
     )
+    set_target_properties(${target} PROPERTIES FOLDER "tests")
 endforeach()

@@ -32,6 +32,7 @@ if (METABENCH_HANA
         metabench_add_dataset(${dataset} ${ARGN} MEDIAN_OF 3)
         target_include_directories(${dataset} PUBLIC ${Hana_INCLUDE_DIRS})
         add_dependencies(${dataset} Hana)
+        set_target_properties(${dataset} PROPERTIES FOLDER "datasets/hana")
     endfunction()
 else()
     function(Hana_add_dataset)

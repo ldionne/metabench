@@ -11,6 +11,7 @@ if (METABENCH_FUSION AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND
         function(Fusion_add_dataset dataset)
             metabench_add_dataset(${dataset} ${ARGN} MEDIAN_OF 3)
             target_include_directories(${dataset} PUBLIC ${Boost_INCLUDE_DIRS})
+            set_target_properties(${dataset} PROPERTIES FOLDER "datasets/fusion")
         endfunction()
     else()
         message(STATUS "No local Boost installation found - Fusion will be unavailable.")

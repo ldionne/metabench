@@ -9,6 +9,7 @@ project(Metabench CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 include(metabench)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 enable_testing()
 
 add_subdirectory(benchmark)
