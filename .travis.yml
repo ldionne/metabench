@@ -23,6 +23,7 @@ addons:
       - clang-3.6
       - clang-3.7
       - clang-3.8
+      - clang-3.9
       - g++-4.8
       - g++-4.9
       - g++-5
@@ -33,6 +34,7 @@ addons:
       - llvm-toolchain-precise-3.6
       - llvm-toolchain-precise-3.7
       - llvm-toolchain-precise-3.8
+      - llvm-toolchain-precise-3.9
       - llvm-toolchain-precise
 
 env:
@@ -48,6 +50,8 @@ env:
     - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
     - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
     - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
+    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
+    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
     - COMPILER=g++-4.8     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
     - COMPILER=g++-4.8     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
     - COMPILER=g++-4.9     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
@@ -76,10 +80,12 @@ install:
 
   # Install libc++ and libc++abi if needed
   - |
-    if [[ "${CXX}" == "clang++-3.6" || "${CXX}" == "clang++-3.7" || "${CXX}" == "clang++-3.8" ]]; then
+    if [[ "${CXX%%+*}" == "clang" ]]; then
       if   [[ "${CXX}" == "clang++-3.6" ]]; then LLVM_VERSION="3.6.2";
       elif [[ "${CXX}" == "clang++-3.7" ]]; then LLVM_VERSION="3.7.1";
-      elif [[ "${CXX}" == "clang++-3.8" ]]; then LLVM_VERSION="3.8.1"; fi
+      elif [[ "${CXX}" == "clang++-3.8" ]]; then LLVM_VERSION="3.8.1";
+      elif [[ "${CXX}" == "clang++-3.9" ]]; then LLVM_VERSION="3.9.0";
+      fi
 
       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
       LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
