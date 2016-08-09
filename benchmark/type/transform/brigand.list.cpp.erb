@@ -5,12 +5,8 @@
 #include <brigand/sequences/list.hpp>
 #include <brigand/algorithms/transform.hpp>
 
-struct f {
-    template<typename X>
-    struct apply {
-        using type = X;
-    };
-};
+template<typename X>
+using f = X;
 
 template<int> struct x;
 
@@ -19,7 +15,7 @@ using list = brigand::list<
 >;
 
 #if defined(METABENCH)
-using result = brigand::transform<list, f>;
+using result = brigand::transform<list, brigand::bind<f,brigand::_1>>;
 #endif
 
 int main() { }
