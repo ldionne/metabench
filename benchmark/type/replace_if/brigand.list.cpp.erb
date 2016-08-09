@@ -7,17 +7,15 @@
 #include <brigand/types/bool.hpp>
 #include <brigand/types/integer.hpp>
 
-struct is_even {
-    template<typename N>
-    using apply = brigand::bool_<N::type::value % 2 == 0>;
-};
+template<typename N>
+using is_even = brigand::bool_<N::type::value % 2 == 0>;
 
 using list = brigand::list<
     <%= (1..n).map { |i| "brigand::int32_t<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
-using result = brigand::replace_if<list, is_even, void>;
+using result = brigand::replace_if<list, brigand::bind<is_even,brigand::_1>, void>;
 #endif
 
 int main() { }
