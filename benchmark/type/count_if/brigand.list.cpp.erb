@@ -1,0 +1,21 @@
+// Copyright Louis Dionne 2016
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#include <brigand/sequences/count_if.hpp>
+#include <brigand/sequences/list.hpp>
+#include <brigand/types/integer.hpp>
+#include <brigand/types/bool.hpp>
+
+template<typename T>
+using is_even = brigand::bool_<T::value % 2 == 0>;
+
+using list = brigand::list<
+    <%= (1..n).map { |i| "std::integral_constant<int,#{i}>" }.join(', ') %>
+>;
+
+#if defined(METABENCH)
+using result = brigand::count_if<list, brigand::bind<is_even,brigand::_1>>;
+#endif
+
+int main() { }
