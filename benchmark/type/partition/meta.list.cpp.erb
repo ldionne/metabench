@@ -11,7 +11,7 @@ struct is_even {
 };
 
 using list = meta::list<
-    <%= (1..n).map { |i| "metal::int_<#{i}>" }.join(', ') %>
+    <%= (1..n).map { |i| "meta::int_<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
