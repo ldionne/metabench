@@ -1,8 +1,8 @@
-// Copyright Louis Dionne 2016
+// Copyright Bruno Dutra 2016
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#include <brigand/algorithm/count_if.hpp>
+#include <brigand/algorithm/remove.hpp>
 #include <brigand/sequences/list.hpp>
 #include <brigand/types/bool.hpp>
 
@@ -14,7 +14,7 @@ using list = brigand::list<
 >;
 
 #if defined(METABENCH)
-using result = brigand::count_if<list, brigand::bind<is_even,brigand::_1>>;
+using result = brigand::filter<list, brigand::bind<is_even,brigand::_1>>;
 #endif
 
 int main() { }
