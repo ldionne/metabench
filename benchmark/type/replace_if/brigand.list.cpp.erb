@@ -2,10 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#include <brigand/sequences/list.hpp>
-#include <brigand/algorithms/replace.hpp>
-#include <brigand/types/bool.hpp>
-#include <brigand/types/integer.hpp>
+#include <brigand/brigand.hpp>
 
 template<typename N>
 using is_even = brigand::bool_<N::type::value % 2 == 0>;
