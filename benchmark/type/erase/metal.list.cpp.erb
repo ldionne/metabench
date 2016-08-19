@@ -1,0 +1,17 @@
+// Copyright Bruno Dutra 2016
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#include <metal.hpp>
+
+template<int> struct x;
+
+using list = metal::list<
+    <%= (1..n).map { |i| "x<#{i}>" }.join(', ') %>
+>;
+
+#if defined(METABENCH)
+using result = metal::erase<list, metal::number<<%= n/2 %>>>;
+#endif
+
+int main() { }

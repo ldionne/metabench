@@ -1,0 +1,18 @@
+// Copyright Bruno Dutra 2016
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#define BRIGAND_NO_BOOST_SUPPORT
+#include <brigand/brigand.hpp>
+
+template<int> struct x;
+
+using list = brigand::list<
+    <%= (1..n).map { |i| "x<#{i}>" }.join(', ') %>
+>;
+
+#if defined(METABENCH)
+using result = brigand::erase<list, brigand::int32_t<<%= n/2 %>>>;
+#endif
+
+int main() { }
