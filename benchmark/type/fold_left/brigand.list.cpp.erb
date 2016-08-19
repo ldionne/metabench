@@ -17,7 +17,7 @@ using list = brigand::list<
 >;
 
 #if defined(METABENCH)
-using result = brigand::fold<list, state, brigand::bind<F,brigand::_1>>;
+using result = brigand::fold<list, state, brigand::bind<F,brigand::_1,brigand::_2>;
 #endif
 
 int main() { }
