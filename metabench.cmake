@@ -24,6 +24,7 @@ set(METABENCH_DIR ${CMAKE_CURRENT_BINARY_DIR}/_metabench)
 # metabench_add_dataset(target path_to_template range
 #                       [NAME name]
 #                       [ENV env]
+#                       [COLOR color]
 #                       [MEDIAN_OF n]
 #                       [OUTPUT path/to/file])
 #
@@ -98,6 +99,10 @@ set(METABENCH_DIR ${CMAKE_CURRENT_BINARY_DIR}/_metabench)
 #       inside the ERB template. This argument can be used to parameterize the
 #       dataset in more complex ways.
 #
+#   [COLOR color]:
+#       A string specifying the color used to display the dataset on the chart
+#       in any valid CSS format.
+#
 #   [MEDIAN_OF n]:
 #       The number of times to build and run the ERB template when gathering
 #       timing information. The timings are taken `n` times, and the median of
@@ -113,7 +118,7 @@ set(METABENCH_DIR ${CMAKE_CURRENT_BINARY_DIR}/_metabench)
 #       binary directory.
 function(metabench_add_dataset target path_to_template range)
     set(options)
-    set(one_value_args NAME ENV MEDIAN_OF OUTPUT)
+    set(one_value_args NAME ENV COLOR MEDIAN_OF OUTPUT)
     set(multi_value_args)
     cmake_parse_arguments(ARGS "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
@@ -130,6 +135,10 @@ function(metabench_add_dataset target path_to_template range)
 
     if (NOT ARGS_ENV)
         set(ARGS_ENV "{}")
+    endif()
+
+    if (NOT ARGS_COLOR)
+        set(ARGS_COLOR "")
     endif()
 
     if (NOT ARGS_MEDIAN_OF)
@@ -172,6 +181,7 @@ function(metabench_add_dataset target path_to_template range)
             -e "env = (${ARGS_ENV})"
             -e "data = {}"
             -e "data['key'] = '${ARGS_NAME}'"
+            -e "data['color'] = '${ARGS_COLOR}'"
             -e "data['values'] = measure('${target}', '${path_to_template}', range, env, ${ARGS_MEDIAN_OF})"
             -e "FileUtils.mkdir_p(File.dirname('${ARGS_OUTPUT}'))"
             -e "IO.write('${ARGS_OUTPUT}', JSON.generate(data))"
