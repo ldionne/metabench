@@ -15,6 +15,7 @@ curl -ILfSs $1 > /dev/null || exit 2
 
 curl -Ls $1 \
     | perl \
+        -pe 's/(.{2048}[^ ,;]+.)/\1\n/g;' \
         -pe 's/\\/\\\\/g;' \
         -pe 's/"/\\"/g;' \
         -pe 's/@/\\@/g;' \
