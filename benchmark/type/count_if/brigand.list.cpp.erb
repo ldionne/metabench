@@ -1,19 +1,19 @@
-// Copyright Bruno Dutra 2016
+// Copyright Odin Holmes 2016
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 #define BRIGAND_NO_BOOST_SUPPORT
 #include <brigand/brigand.hpp>
 
-template<typename N>
-using is_last = brigand::bool_<N::type::value == <%= n %>>;
+template<typename T>
+using is_even = brigand::bool_<T::value % 2 == 0>;
 
 using list = brigand::list<
     <%= (1..n).map { |i| "brigand::int32_t<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
-using result = brigand::find<list, brigand::bind<is_last, brigand::_1>>;
+using result = brigand::count_if<list, brigand::bind<is_even,brigand::_1>>;
 #endif
 
 int main() { }
