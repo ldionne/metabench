@@ -24,7 +24,7 @@ if (METABENCH_META AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
         set(Meta_INCLUDE_DIRS ${SOURCE_DIR}/include)
     endif()
 
-    function(Meta_add_dataset dataset)
+    function(Meta_add_dataset dataset datatype)
         set(color "hsl(118, 41%, 49%)")
         metabench_add_dataset(${dataset} ${ARGN} COLOR ${color})
         target_include_directories(${dataset} PUBLIC ${Meta_INCLUDE_DIRS})

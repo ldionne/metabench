@@ -24,7 +24,7 @@ if (METABENCH_BRIGAND)
         set(Brigand_INCLUDE_DIRS ${SOURCE_DIR})
     endif()
 
-    function(Brigand_add_dataset dataset)
+    function(Brigand_add_dataset dataset datatype)
         set(color "hsl(207, 54%, 47%)")
         metabench_add_dataset(${dataset} ${ARGN} COLOR ${color})
         target_include_directories(${dataset} PUBLIC ${Brigand_INCLUDE_DIRS})
