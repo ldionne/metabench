@@ -3,10 +3,10 @@
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 set(datasets)
-add_dataset(datasets dataset.type.transform.brigand.list    brigand.list.cpp.erb    "(0..50).step(10).to_a + (100..500).step(100).to_a")
-add_dataset(datasets dataset.type.transform.meta.list       meta.list.cpp.erb       "(0..50).step(10).to_a + (100..500).step(100).to_a")
-add_dataset(datasets dataset.type.transform.metal.list      metal.list.cpp.erb      "(0..50).step(10).to_a + (100..500).step(100).to_a")
-add_dataset(datasets dataset.type.transform.mpl.list        mpl.list.cpp.erb        "(0..50).step(10)")
-add_dataset(datasets dataset.type.transform.mpl.vector      mpl.vector.cpp.erb      "(0..50).step(10)")
+add_dataset(datasets type transform brigand list brigand.list.cpp.erb "(0..50).step(10).to_a + (100..500).step(100).to_a")
+add_dataset(datasets type transform meta list    meta.list.cpp.erb    "(0..50).step(10).to_a + (100..500).step(100).to_a")
+add_dataset(datasets type transform metal list   metal.list.cpp.erb   "(0..50).step(10).to_a + (100..500).step(100).to_a")
+add_dataset(datasets type transform mpl list     mpl.list.cpp.erb     "(0..50).step(10)")
+add_dataset(datasets type transform mpl vector   mpl.vector.cpp.erb   "(0..50).step(10)")
 
-add_chart(benchmark.type.transform DATASETS ${datasets})
+add_chart(type transform DATASETS ${datasets})

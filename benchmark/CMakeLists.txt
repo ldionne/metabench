@@ -18,30 +18,29 @@ include(benchmark/dependencies/metal)
 include(benchmark/dependencies/mpl)
 include(benchmark/dependencies/std)
 
+macro(add_dataset datasets category case lib datatype path_to_template range)
+    set(name "${lib}.${datatype}")
+    set(dataset "dataset.${category}.${case}.${name}")
+    set(args ${dataset} ${datatype} ${path_to_template} ${range}
+        NAME ${name} OUTPUT ${name}.json ${ARGN} MEDIAN_OF 3
+    )
 
-macro(add_dataset datasets dataset path_to_template range)
-    string(REGEX REPLACE "[^.]+[.][^.]+[.][^.]+[.](.*)" "\\1" name ${dataset})
-    set(args ${dataset} ${path_to_template} ${range} NAME ${name} OUTPUT ${name}.json ${ARGN} MEDIAN_OF 3)
-
-    if(${dataset} MATCHES "brigand\\.")
+    if("${lib}" STREQUAL "brigand")
         Brigand_add_dataset(${args})
-    elseif(${dataset} MATCHES "fusion\\.")
+    elseif("${lib}" STREQUAL "fusion")
         Fusion_add_dataset(${args})
-    elseif(${dataset} MATCHES "hana\\.")
+    elseif("${lib}" STREQUAL "hana")
         Hana_add_dataset(${args})
-    elseif(${dataset} MATCHES "meta\\.")
+    elseif("${lib}" STREQUAL "meta")
         Meta_add_dataset(${args})
-    elseif(${dataset} MATCHES "metal\\.")
+    elseif("${lib}" STREQUAL "metal")
         Metal_add_dataset(${args})
-    elseif (${dataset} MATCHES "mpl\\.")
+    elseif ("${lib}" STREQUAL "mpl")
         MPL_add_dataset(${args})
-    elseif (${dataset} MATCHES "std\\.")
+    elseif ("${lib}" STREQUAL "std")
         Std_add_dataset(${args})
     else()
-        message(FATAL_ERROR
-            "The dataset named '${dataset}' does not appear to benchmark any "
-            "known metaprogramming library."
-        )
+        message(FATAL_ERROR "The library '${lib}' is currently not supported.")
     endif()
 
     if (TARGET ${dataset})
@@ -50,15 +49,23 @@ macro(add_dataset datasets dataset path_to_template range)
 endmacro()
 
 add_custom_target(benchmarks)
-macro(add_chart target)
+macro(add_chart category case)
     cmake_parse_arguments(ARGS "" "" "DATASETS" ${ARGN})
+
+    set(type_target "benchmarks.${category}")
+    set(case_target "${type_target}.${case}")
+
+    if (NOT TARGET ${type_target})
+        add_custom_target(${type_target})
+    endif()
 
     # If we have no datasets, perhaps they were all disabled in the current
     # configuration. In this case, we omit the benchmark instead of failing.
     list(LENGTH ARGS_DATASETS _n_datasets)
     if (_n_datasets GREATER 0)
-        metabench_add_chart(${target} ${ARGN} OUTPUT index.html)
-        add_dependencies(benchmarks ${target})
+        metabench_add_chart(${case_target} ${ARGN} OUTPUT index.html)
+        add_dependencies(${type_target} ${case_target})
+        add_dependencies(benchmarks ${type_target})
     endif()
 endmacro()
 

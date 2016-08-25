@@ -3,8 +3,8 @@
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 set(datasets)
-add_dataset(datasets dataset.hetero.is_disjoint.hana.set   hana.set.cpp.erb   "(0..50).step(10).to_a")
-add_dataset(datasets dataset.hetero.is_disjoint.hana.map   hana.map.cpp.erb   "(0..50).step(10).to_a")
-add_dataset(datasets dataset.hetero.is_disjoint.hana.tuple hana.tuple.cpp.erb "(0..50).step(10).to_a")
+add_dataset(datasets hetero is_disjoint hana set   hana.set.cpp.erb   "(0..50).step(10).to_a")
+add_dataset(datasets hetero is_disjoint hana map   hana.map.cpp.erb   "(0..50).step(10).to_a")
+add_dataset(datasets hetero is_disjoint hana tuple hana.tuple.cpp.erb "(0..50).step(10).to_a")
 
-add_chart(benchmark.hetero.is_disjoint DATASETS ${datasets})
+add_chart(hetero is_disjoint DATASETS ${datasets})

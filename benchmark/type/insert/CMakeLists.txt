@@ -3,8 +3,8 @@
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 set(datasets)
-add_dataset(datasets dataset.type.insert.metal.list     metal.list.cpp.erb      "[1] + (10..50).step(10).to_a + (100..500).step(100).to_a")
-add_dataset(datasets dataset.type.insert.mpl.list       mpl.list.cpp.erb        "[1] + (10..50).step(10).to_a")
-add_dataset(datasets dataset.type.insert.mpl.vector     mpl.vector.cpp.erb      "[1] + (10..50).step(10).to_a")
+add_dataset(datasets type insert metal list metal.list.cpp.erb "[1] + (10..50).step(10).to_a + (100..500).step(100).to_a")
+add_dataset(datasets type insert mpl list   mpl.list.cpp.erb   "[1] + (10..50).step(10).to_a")
+add_dataset(datasets type insert mpl vector mpl.vector.cpp.erb "[1] + (10..50).step(10).to_a")
 
-add_chart(benchmark.type.insert DATASETS ${datasets})
+add_chart(type insert DATASETS ${datasets})
