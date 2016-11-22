@@ -608,7 +608,7 @@ file(WRITE ${CHART_HTML_ERB_PATH}
 "             });                                                                                                           \n"
 "      }                                                                                                                    \n"
 "                                                                                                                           \n"
-"      chart.interpolate('basis').useInteractiveGuideline(true);                                                            \n"
+"      chart.interpolate('cardinal').useInteractiveGuideline(true);                                                            \n"
 "      d3.select('#chart').datum(data).call(chart);                                                                         \n"
 "      var plot = d3.select('#chart > g');                                                                                  \n"
 "                                                                                                                           \n"
