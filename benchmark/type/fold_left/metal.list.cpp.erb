@@ -18,7 +18,7 @@ using <%= "xs#{k}" %> = metal::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = metal::fold_left<<%= "xs#{k}" %>, state, metal::lambda<f>>;
+using <%= "result#{k}" %> = metal::accumulate<<%= "xs#{k}" %>, state, metal::lambda<f>>;
 #endif
 
 <% end %>

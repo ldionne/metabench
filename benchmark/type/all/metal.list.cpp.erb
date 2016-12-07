@@ -14,7 +14,7 @@ using <%= "xs#{k}" %> = metal::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = metal::all<<%= "xs#{k}" %>, metal::lambda<is_positive>>;
+using <%= "result#{k}" %> = metal::all_of<<%= "xs#{k}" %>, metal::lambda<is_positive>>;
 #endif
 
 <% end %>

@@ -14,7 +14,7 @@ using <%= "xs#{k}" %> = metal::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = metal::any<<%= "xs#{k}" %>, metal::lambda<is_last>>;
+using <%= "result#{k}" %> = metal::any_of<<%= "xs#{k}" %>, metal::lambda<is_last>>;
 #endif
 
 <% end %>
