@@ -2,10 +2,12 @@
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-if (METABENCH_METAL AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND
-                             CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19")
-                    AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
-                             CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5"))
+if (METABENCH_METAL
+    AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+             CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8")
+    AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND
+             CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19")
+)
     find_package(Metal QUIET)
     if (Metal_FOUND)
         message(STATUS "Local Metal installation found - version ${Metal_VERSION}")
