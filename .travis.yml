@@ -12,6 +12,10 @@ sudo: false
 branches:
   except: /pr\/.*/
 
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps/boost-1.63.0 # Keep this in sync with BOOST_VERSION
+
 addons:
   apt:
     packages:
@@ -61,7 +65,7 @@ install:
 
   # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
   # Install a recent CMake
   - CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
@@ -93,9 +97,14 @@ install:
     fi
 
   # Install Boost headers
-  - BOOST_URL="https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2/download"
-  - mkdir boost && travis_retry wget --no-check-certificate --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xj -C boost
-  - (cd boost && ./bootstrap.sh && ./b2 headers)
+  - BOOST_VERSION=1.63.0
+  - BOOST_DIR=${DEPS_DIR}/boost-${BOOST_VERSION}
+  - |
+    if [[ -z "$(ls -A ${BOOST_DIR})" ]]; then
+      BOOST_URL="http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/boost_${BOOST_VERSION//\./_}.tar.gz"
+      mkdir -p ${BOOST_DIR}
+      { travis_retry wget -O - ${BOOST_URL} | tar --strip-components=1 -xz -C ${BOOST_DIR}; } || exit 1
+    fi
 
   # Install and use a more recent Ruby
   - rvm use 2.1 --install --binary --fuzzy
@@ -106,7 +115,7 @@ before_script:
   - git config --global user.email "<>"
 
   - cd ${TRAVIS_BUILD_DIR}
-  - (mkdir build && cd build && cmake .. -DBOOST_ROOT=${DEPS_DIR}/boost)
+  - (mkdir build && cd build && cmake .. -DBOOST_ROOT=${BOOST_DIR})
 
 script:
   - cmake --build build
