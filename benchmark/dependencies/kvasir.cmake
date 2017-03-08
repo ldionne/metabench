@@ -8,11 +8,6 @@ if (METABENCH_KVASIR
     AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND
              CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19")
 )
-#    find_package(Kvasir QUIET) <== Insert your logic to find preinstalled Kvasir
-#    if (Kvasir_FOUND)
-#        message(STATUS "Local Kvasir installation found - version ${Kvasir_VERSION}")
-#        add_custom_target(Kvasir)
-#    else()
         message(STATUS "No local Kvasir installation found - fetching branch development")
         include(ExternalProject)
         ExternalProject_Add(Kvasir EXCLUDE_FROM_ALL 1
@@ -27,7 +22,6 @@ if (METABENCH_KVASIR
         )
         ExternalProject_Get_Property(Kvasir SOURCE_DIR)
         set(Kvasir_INCLUDE_DIR ${SOURCE_DIR}/src/kvasir/mpl)
-#    endif()
 
     function(Kvasir_add_dataset dataset datatype)
         set(color "hsl(0, 0%, 0%)") 
