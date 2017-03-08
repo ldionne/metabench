@@ -4,6 +4,7 @@
 
 set(datasets)
 add_dataset(datasets type transform brigand list   brigand.list.cpp.erb 150 "(0..50).step(10).to_a + (100..500).step(50).to_a")
+add_dataset(datasets type transform kvasir  list   kvasir.list.cpp.erb  150 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type transform meta    list   meta.list.cpp.erb    150 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type transform metal   list   metal.list.cpp.erb   150 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type transform mpl     list   mpl.list.cpp.erb     10  "(0..50).step(10)")
