@@ -5,6 +5,7 @@
 set(datasets)
 add_dataset(datasets type all brigand list brigand.list.cpp.erb 15 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type all metal   list metal.list.cpp.erb   15 "(0..50).step(10).to_a + (100..500).step(50).to_a")
+add_dataset(datasets type all kvasir   list kvasir.list.cpp.erb   15 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 # add_dataset(datasets type all meta    list meta.list.cpp.erb    15 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 
 add_chart(type all DATASETS ${datasets})
