@@ -8,21 +8,24 @@
 #include <type_traits>
 namespace fusion = boost::fusion;
 
-struct is_last {
-    template<typename N>
+template <int X>
+struct equals_to {
+    template<typename Y>
     struct apply
-        : std::integral_constant<bool, N::type::value == <%= n %>>
+        : std::integral_constant<bool, X == Y::type::value>
     {};
 };
 
 int main() {
 <% env[:k].times do |k| %>
+    <% ints = ((k*n+1)..(k*n+n)).to_a %>
+
     /*constexpr*/ auto <%= "xs#{k}" %> = fusion::make_list(
-        <%= ((k*n+1)..(k*n+n)).map { |i| "std::integral_constant<int, #{i}>{}" }.join(', ') %>
+        <%= ints.map { |i| "std::integral_constant<int, #{i}>{}" }.join(', ') %>
     );
 
 #if defined(METABENCH)
-    /*constexpr*/ auto <%= "result#{k}" %> = fusion::find_if<is_last>(<%= "xs#{k}" %>);
+    /*constexpr*/ auto <%= "result#{k}" %> = fusion::find_if<equals_to<<%= ints.last || 0 %>>>(<%= "xs#{k}" %>);
 #endif
 <% end %>
 }

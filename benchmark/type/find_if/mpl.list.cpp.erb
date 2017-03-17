@@ -13,19 +13,22 @@
 #include <boost/mpl/int.hpp>
 namespace mpl = boost::mpl;
 
-struct is_last {
-    template<typename N>
-    using apply = mpl::bool_<N::type::value == <%= n %>>;
+template <int X>
+struct equals_to {
+    template<typename Y>
+    using apply = mpl::bool_<X == Y::type::value>;
 };
 
 <% env[:k].times do |k| %>
 
+<% ints = ((k*n+1)..(k*n+n)).to_a %>
+
 using <%= "xs#{k}" %> = mpl::list<
-    <%= ((k*n+1)..(k*n+n)).map { |i| "mpl::int_<#{i}>" }.join(', ') %>
+    <%= ints.map { |i| "mpl::int_<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::find_if<<%= "xs#{k}" %>, is_last>::type;
+using <%= "result#{k}" %> = mpl::find_if<<%= "xs#{k}" %>, equals_to<<%= ints.last || 0 %>>>::type;
 #endif
 
 <% end %>

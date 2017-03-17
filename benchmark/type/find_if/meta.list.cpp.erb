@@ -4,19 +4,22 @@
 
 #include <meta/meta.hpp>
 
-struct is_last {
-    template<typename N>
-    using invoke = meta::bool_<N::type::value == <%= n %>>;
+template <int X>
+struct equals_to {
+    template<typename Y>
+    using invoke = meta::bool_<X == Y::type::value>;
 };
 
 <% env[:k].times do |k| %>
 
+<% ints = ((k*n+1)..(k*n+n)).to_a %>
+
 using <%= "xs#{k}" %> = meta::list<
-    <%= ((k*n+1)..(k*n+n)).map { |i| "meta::int_<#{i}>" }.join(', ') %>
+    <%= ints.map { |i| "meta::int_<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = meta::find_if<<%= "xs#{k}" %>, is_last>;
+using <%= "result#{k}" %> = meta::find_if<<%= "xs#{k}" %>, equals_to<<%= ints.last || 0 %>>>;
 #endif
 
 <% end %>
