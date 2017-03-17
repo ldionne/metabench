@@ -1,0 +1,26 @@
+// Copyright Odin Holmes 2017
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#include <boost/mp11.hpp>
+using namespace boost::mp11;
+
+template<int X>
+struct differs_from {
+  template <typename Y>
+  using apply = mp_bool<X != Y::value>;
+};
+
+<% env[:k].times do |k| %>
+
+<% ints = ((k*n+1)..(k*n+n)).to_a %>
+
+using <%= "xs#{k}" %> = mp_list<<%= ints.map { |i| "std::integral_constant<int,#{i}>" }.join(', ') %>>;
+
+#if defined(METABENCH)
+using <%= "result#{k}" %> = mp_all_of<<%= "xs#{k}" %>, differs_from<<%= ints.last || 0 %>>::apply>;
+#endif
+
+<% end %>
+
+int main() {}
