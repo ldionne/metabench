@@ -5,6 +5,7 @@
 set(datasets)
 add_dataset(datasets type replace_if brigand list   brigand.list.cpp.erb 12 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type replace_if hana    types  hana.types.cpp.erb   12 "(0..50).step(10).to_a + (100..500).step(50).to_a")
+add_dataset(datasets type replace_if kvasir  list   kvasir.list.cpp.erb  12 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type replace_if meta    list   meta.list.cpp.erb    12 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type replace_if metal   list   metal.list.cpp.erb   12 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type replace_if mpl     list   mpl.list.cpp.erb     10 "(0..50).step(10)")

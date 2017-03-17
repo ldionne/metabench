@@ -6,7 +6,7 @@
 namespace mpl = kvasir::mpl;
 
 template<typename N>
-using is_even = mpl::int_<N::value % 2 == 0>;
+using is_even = mpl::bool_<N::value % 2 == 0>;
 
 <% env[:k].times do |k| %>
 

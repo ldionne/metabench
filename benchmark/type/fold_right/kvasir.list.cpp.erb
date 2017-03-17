@@ -5,17 +5,21 @@
 #include <kvasir/mpl/mpl.hpp>
 namespace mpl = kvasir::mpl;
 
-template<typename N>
-using is_last = mpl::bool_<N::value == <%= n %>>;
+template<typename, typename X>
+using f = X;
+
+struct state;
+
+template<int> struct x;
 
 <% env[:k].times do |k| %>
 
 using <%= "xs#{k}" %> = mpl::list<
-    <%= ((k*n+1)..(k*n+n)).map { |i| "mpl::int_<#{i}>" }.join(', ') %>
+    <%= ((k*n+1)..(k*n+n)).map { |i| "x<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::find_if<<%= "xs#{k}" %>, is_last>;
+using <%= "result#{k}" %> = mpl::fold_right<<%= "xs#{k}" %>, state, f>;
 #endif
 
 <% end %>

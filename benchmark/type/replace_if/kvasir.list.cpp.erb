@@ -6,7 +6,7 @@
 namespace mpl = kvasir::mpl;
 
 template<typename N>
-using is_last = mpl::bool_<N::value == <%= n %>>;
+using is_even = mpl::int_<N::value % 2 == 0>;
 
 <% env[:k].times do |k| %>
 
@@ -15,7 +15,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::find_if<<%= "xs#{k}" %>, is_last>;
+using <%= "result#{k}" %> = mpl::replace_if<<%= "xs#{k}" %>, void, is_even>;
 #endif
 
 <% end %>

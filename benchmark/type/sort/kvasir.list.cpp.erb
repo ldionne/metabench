@@ -1,0 +1,25 @@
+// Copyright Odin Holmes 2017
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+#include <kvasir/mpl/mpl.hpp>
+namespace mpl = kvasir::mpl;
+
+template<typename T, typename U>
+using less = mpl::bool_<(T::value < U::value)>;
+
+<% env[:k].times do |k| %>
+
+using <%= "xs#{k}" %> = mpl::list<<%=
+    xs = ((k*n+1)..(k*n+n)).map { |i| "mpl::int_<#{i}>" }
+    rng = Random.new(k)
+    xs.shuffle(random: rng).join(', ')
+%>>;
+
+#if defined(METABENCH)
+using <%= "result#{k}" %> = mpl::stable_sort<<%= "xs#{k}" %>,less>;
+#endif
+
+<% end %>
+
+int main() { }
