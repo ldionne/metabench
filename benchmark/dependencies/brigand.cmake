@@ -21,7 +21,7 @@ if (METABENCH_BRIGAND)
             UPDATE_COMMAND ""    # Disable source work-tree update
         )
         ExternalProject_Get_Property(Brigand SOURCE_DIR)
-        set(Brigand_INCLUDE_DIRS ${SOURCE_DIR})
+        set(Brigand_INCLUDE_DIRS ${SOURCE_DIR}/include)
     endif()
 
     function(Brigand_add_dataset dataset datatype)
