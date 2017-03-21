@@ -5,17 +5,17 @@
 #define BRIGAND_NO_BOOST_SUPPORT
 #include <brigand/brigand.hpp>
 
-template<typename N>
-using is_last = brigand::bool_<N::type::value == <%= n %>>;
+template<typename X, typename Y>
+using equals_to = brigand::bool_<X::type::value == Y::type::value>;
 
 <% env[:k].times do |k| %>
 
-using <%= "xs#{k}" %> = brigand::list<
-    <%= ((k*n+1)..(k*n+n)).map { |i| "brigand::int32_t<#{i}>" }.join(', ') %>
->;
+<% ints = ((k*n+1)..(k*n+n)).to_a %>
+
+using <%= "xs#{k}" %> = brigand::list<<%= ints.map { |i| "brigand::int32_t<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = brigand::any<<%= "xs#{k}" %>, brigand::bind<is_last, brigand::_1>>;
+using <%= "result#{k}" %> = brigand::any<<%= "xs#{k}" %>, brigand::bind<equals_to, brigand::int32_t<<%= ints.last || 0 %>>, brigand::_1>>;
 #endif
 
 <% end %>

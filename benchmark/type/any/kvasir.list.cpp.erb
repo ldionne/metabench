@@ -5,17 +5,20 @@
 #include <kvasir/mpl/mpl.hpp>
 namespace mpl = kvasir::mpl;
 
-template<typename N>
-using is_last = mpl::int_<N::value == <%= n %>>;
+template<int X>
+struct equals_to {
+  template <typename Y>
+  using apply = mpl::bool_<X == Y::value>;
+};
 
 <% env[:k].times do |k| %>
 
-using <%= "xs#{k}" %> = mpl::list<
-    <%= ((k*n+1)..(k*n+n)).map { |i| "mpl::int_<#{i}>" }.join(', ') %>
->;
+<% ints = ((k*n+1)..(k*n+n)).to_a %>
+
+using <%= "xs#{k}" %> = mpl::list<<%= ints.map { |i| "mpl::int_<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::any<<%= "xs#{k}" %>,is_last>;
+using <%= "result#{k}" %> = mpl::any<<%= "xs#{k}" %>, equals_to<<%= ints.last || 0 %>>::apply>;
 #endif
 
 <% end %>

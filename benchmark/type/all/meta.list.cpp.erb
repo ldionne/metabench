@@ -4,19 +4,20 @@
 
 #include <meta/meta.hpp>
 
-struct is_positive {
-    template<typename N>
-    using invoke = meta::bool_<(N::type::value > 0)>;
+template <int X>
+struct differs_from {
+    template<typename Y>
+    using invoke = meta::bool_<X != Y::type::value>;
 };
 
 <% env[:k].times do |k| %>
 
-using <%= "xs#{k}" %> = meta::list<
-    <%= ((k*n+1)..(k*n+n)).map { |i| "meta::int_<#{i}>" }.join(', ') %>
->;
+<% ints = ((k*n+1)..(k*n+n)).to_a %>
+
+using <%= "xs#{k}" %> = meta::list<<%= ints.map { |i| "meta::int_<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = meta::all_of<<%= "xs#{k}" %>, is_positive>;
+using <%= "result#{k}" %> = meta::all_of<<%= "xs#{k}" %>, differs_from<<%= ints.last || 0 %>>>;
 #endif
 
 <% end %>
