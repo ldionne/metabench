@@ -5,6 +5,7 @@
 set(datasets)
 add_dataset(datasets type make brigand list   brigand.list.cpp.erb 300 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type make hana    types  hana.types.cpp.erb   300 "(0..50).step(10).to_a + (100..500).step(50).to_a")
+add_dataset(datasets type make kvasir  list   kvasir.list.cpp.erb  300 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type make meta    list   meta.list.cpp.erb    300 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type make metal   list   metal.list.cpp.erb   300 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type make mp11    list   mp11.list.cpp.erb    300 "(0..50).step(10).to_a + (100..500).step(50).to_a")
