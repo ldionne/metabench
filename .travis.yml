@@ -39,30 +39,49 @@ addons:
 
 env:
   global:
+    # Number of parts in which we split the generation of benchmarks to avoid
+    # timeouts on Travis. Keep this in sync with the `PART=X` variables below.
+    - PARTS=3
+
     # GitHub token for pushing the benchmarks. The token is stored in the
     # ${GITHUB_TOKEN} environment variable.
     - secure: "TY3VQ9eOoYxiBvP6kR+WyE0pgJ5vmxgXhCqjhGPWiieKn3H8hUhhbacSnmODXJQ89jbcIgLxUSPSWq3ZAJNDPem0nyEfoBklnJFq7IrZ1sXZ3ywBcHHEq/09+LTsjElg+9NU6HRMmzuT1WCG76/KmQHL7THSjQoPKHLAbHLuTzWeMVzC1qB0JC/SsfFXmuB0ZCNIQsu6P9ADLUpUgjm1mEXiUIDIXtfFPUvhC7UCC+kw5OR4rmwWM0adzFJglA2gom73fxkX9O/qPtZh6nroV7Vu6cUsbTjmW7YlV+0Us5YWgulC7dJqAO8GrHbfk35n3unMs2ScJ4nzWVEFCwCFiMOWb8VWIPRSQXDjuxkc1Cuf8A2M6FnFqZqhXE2JlsUfVAgI7zrG5LytYJkJxxphV4Hbkf0gTJ8VdA6dHV69AX8BIcszhCPo2PdMRvA+3iAL8FIMopVtDDcra8glO8JsFsR6C5ptdXMpDZ2/KMvoZta8Rpk38YEsiwf9mI7vBDV5okWM071U1jbVDGc8FIDfC14xIwFy7WFOWtZA4KYQTS5PxqEyPxtIRNNdWfCiNcNmm4eozw/kSmcYzMQxheWTx2Wv9V7EdKcx1r7mmv/MXzGnKLRW4j5I7VbG3pMXWr2KA5+qQdnYRjK/xa0j1aOD1OWwE4Fzt4ETkVGzZ8dvFm8="
 
   matrix:
-    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=g++-4.8     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=g++-4.8     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=g++-4.9     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=g++-4.9     CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=g++-5       CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=g++-5       CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
-    - COMPILER=g++-6       CMAKE_GENERATOR="Unix Makefiles" CATEGORY=hetero
-    - COMPILER=g++-6       CMAKE_GENERATOR="Unix Makefiles" CATEGORY=type
+    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=3
+
+    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=1
+    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=2
+    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=3
 
     # Also test on ninja
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Ninja"
+    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Ninja"
 
 install:
   - export CXX=${COMPILER} # Override CXX set by Travis
@@ -137,25 +156,38 @@ script:
   # During nightly builds, we generate the benchmarks and update the gh-pages
   # branch with the data.
   - |
-    if [[ "${TRAVIS_EVENT_TYPE}" == "cron" && "${CATEGORY}" != "" ]]; then
-      cmake --build build --target benchmark.${CATEGORY} &&
+    if [[ "${TRAVIS_EVENT_TYPE}" == "cron" && "${PART}" != "" ]]; then
+      ALL_BENCHMARKS=($(cmake --build build --target help | grep -E "benchmark\.\w+\." | cut -d " " -f 2 | sort))
+      SLICE_SIZE=$(expr ${#ALL_BENCHMARKS[@]} / ${PARTS} + ${#ALL_BENCHMARKS[@]} % ${PARTS})
+      SLICE_BEGIN=$(expr \( ${PART} - 1 \) \* ${SLICE_SIZE})
+      BENCHMARKS=(${ALL_BENCHMARKS[@]:${SLICE_BEGIN}:${SLICE_SIZE}})
+      for benchmark in ${BENCHMARKS[@]}; do
+        cmake --build build --target ${benchmark}
+      done &&
 
       # Suppress output to avoid leaking the token when the command fails
       git clone https://ldionne:${GITHUB_TOKEN}@github.com/ldionne/metabench --depth 1 --branch=gh-pages tmp &>/dev/null &&
-      rm -rf tmp/_${CATEGORY}/${COMPILER} &&
-      rsync -am --include '*/' --include '*.html' --include '*.json' --exclude '*' build/benchmark/${CATEGORY}/ tmp/_${CATEGORY}/${COMPILER} &&
 
-      # Add a YAML front matter to every chart and every JSON file (for Jekyll).
-      for chart in tmp/_${CATEGORY}/${COMPILER}/*/*.html; do
-        sed -i -e "1i---" -e "1itimestamp: $(date '+%a, %-d %b %Y')" -e "1icompiler: ${COMPILER}" -e "1i---" ${chart}
-      done &&
-      for dataset in tmp/_${CATEGORY}/${COMPILER}/*/*.json; do
-        sed -i -e "1i---" -e "1i---" ${dataset}
+      for benchmark in ${BENCHMARKS[@]}; do
+        category="$(echo ${benchmark} | cut -d '.' -f 2)"
+        name="$(echo ${benchmark} | cut -d '.' -f 3)"
+        source="build/benchmark/${category}/${name}"
+        destination="tmp/_${category}/${compiler}/${name}"
+
+        rm -rf ${destination} &&
+        mkdir -p ${destination} &&
+        mv ${source}/*.{html,json} ${destination}/ &&
+
+        # Add a YAML front matter to every chart and every JSON file (for Jekyll).
+        sed -i -e "1i---" -e "1itimestamp: $(date '+%a, %-d %b %Y')" -e "1icompiler: ${COMPILER}" -e "1i---" ${destination}/*.html &&
+        for dataset in ${destination}/*.json; do
+          sed -i -e "1i---" -e "1i---" ${dataset}
+        done
       done &&
 
       pushd tmp &&
       git add --all . &&
-      git commit -m "Update '${CATEGORY}' benchmarks for compiler '${COMPILER}'" &&
+      git commit -m "[${COMPILER}] (${PART}/${PARTS}) Update benchmarks ${BENCHMARKS[@]}" &&
       # Suppress output to avoid leaking the token
       travis_retry git push origin gh-pages &>/dev/null &&
       popd
