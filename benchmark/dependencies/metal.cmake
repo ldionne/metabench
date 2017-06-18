@@ -11,7 +11,7 @@ if (METABENCH_METAL
     find_package(Metal QUIET)
     if (Metal_FOUND)
         message(STATUS "Local Metal installation found - version ${Metal_VERSION}")
-        add_custom_target(Metal)
+        get_target_property(Metal_INCLUDE_DIR Metal INTERFACE_INCLUDE_DIRECTORIES)
     else()
         message(STATUS "No local Metal installation found - fetching branch develop")
         include(ExternalProject)
