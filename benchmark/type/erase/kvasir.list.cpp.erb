@@ -14,7 +14,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::erase<<%= "xs#{k}" %>, <%= k*n/env[:k] %>>;
+using <%= "result#{k}" %> = mpl::call<mpl::unpack<mpl::erase<mpl::int_<<%= k*n/env[:k] %>>>>,<%= "xs#{k}" %>>;
 #endif
 
 <% end %>

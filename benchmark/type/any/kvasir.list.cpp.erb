@@ -8,7 +8,7 @@ namespace mpl = kvasir::mpl;
 template<int X>
 struct equals_to {
   template <typename Y>
-  using apply = mpl::bool_<X == Y::value>;
+  using f = mpl::bool_<X == Y::value>;
 };
 
 <% env[:k].times do |k| %>
@@ -18,7 +18,7 @@ struct equals_to {
 using <%= "xs#{k}" %> = mpl::list<<%= ints.map { |i| "mpl::int_<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::any<<%= "xs#{k}" %>, equals_to<<%= ints.last || 0 %>>::apply>;
+using <%= "result#{k}" %> = mpl::call<mpl::unpack<mpl::any<equals_to<<%= ints.last || 0 %>>>>,<%= "xs#{k}" %>>;
 #endif
 
 <% end %>

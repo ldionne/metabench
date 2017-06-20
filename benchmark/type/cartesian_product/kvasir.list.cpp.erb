@@ -14,7 +14,7 @@ using <%= "xs#{k}" %> = mpl::list<<%= ((k*n+1)..(k*n+n)).map { |i| "x<#{i}>" }.j
 using <%= "ys#{k}" %> = mpl::list<<%= ((k*n+1)..(k*n+n)).map { |i| "y<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::product<mpl::list<<%= "xs#{k}" %>, <%= "ys#{k}" %>>>;
+using <%= "result#{k}" %> = mpl::eager::product<mpl::list<<%= "xs#{k}" %>, <%= "ys#{k}" %>>>;
 #endif
 
 <% end %>

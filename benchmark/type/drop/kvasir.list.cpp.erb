@@ -12,7 +12,7 @@ template<int> struct x;
 using <%= "xs#{k}" %> = mpl::list<<%= ((k*n+1)..(k*n+n)).map { |i| "x<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::drop<<%= "xs#{k}" %>, <%= k*n/env[:k] %>>;
+using <%= "result#{k}" %> = mpl::call<mpl::unpack<mpl::drop<mpl::int_<<%= k*n/env[:k] %>>>>, <%= "xs#{k}" %>>;
 #endif
 <% end %>
 

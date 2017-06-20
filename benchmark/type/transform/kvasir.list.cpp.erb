@@ -17,7 +17,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::transform<<%= "xs#{k}" %>,f>;
+using <%= "result#{k}" %> = mpl::eager::transform<<%= "xs#{k}" %>,f>;
 #endif
 
 <% end %>
