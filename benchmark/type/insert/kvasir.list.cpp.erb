@@ -14,7 +14,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::insert<<%= "xs#{k}" %>, <%= k*n/env[:k] %>, void>;
+using <%= "result#{k}" %> = mpl::eager::insert<<%= "xs#{k}" %>, <%= k*n/env[:k] %>, void>;
 #endif
 
 <% end %>

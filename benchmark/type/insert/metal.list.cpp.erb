@@ -13,7 +13,7 @@ using <%= "xs#{k}" %> = metal::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = metal::eager::insert<<%= "xs#{k}" %>, metal::number<<%= k*n/env[:k] %>>, void>;
+using <%= "result#{k}" %> = metal::insert<<%= "xs#{k}" %>, metal::number<<%= k*n/env[:k] %>>, void>;
 #endif
 
 <% end %>
