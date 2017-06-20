@@ -19,7 +19,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::fold_right<<%= "xs#{k}" %>, state, f>;
+using <%= "result#{k}" %> = mpl::eager::fold_right<<%= "xs#{k}" %>, state, f>;
 #endif
 
 <% end %>

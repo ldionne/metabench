@@ -8,7 +8,7 @@ namespace mpl = kvasir::mpl;
 template<int X>
 struct differs_from {
   template <typename Y>
-  using apply = mpl::bool_<X != Y::value>;
+  using f = mpl::bool_<X != Y::value>;
 };
 
 <% env[:k].times do |k| %>
@@ -18,7 +18,7 @@ struct differs_from {
 using <%= "xs#{k}" %> = mpl::list<<%= ints.map { |i| "mpl::int_<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::all<<%= "xs#{k}" %>, differs_from<<%= ints.last || 0 %>>::apply>;
+using <%= "result#{k}" %> = mpl::call<mpl::unpack<mpl::all<differs_from<<%= ints.last || 0 %>>>>,<%= "xs#{k}" %>>;
 #endif
 
 <% end %>

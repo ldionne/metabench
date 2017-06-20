@@ -15,7 +15,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::filter<<%= "xs#{k}" %>,is_even>;
+using <%= "result#{k}" %> = mpl::eager::filter<<%= "xs#{k}" %>,is_even>;
 #endif
 
 <% end %>

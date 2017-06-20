@@ -15,7 +15,7 @@ using <%= "xs#{k}" %> = mpl::list<
 
     <% (env[:p]*n/100).times do |p| %>
     #if defined(METABENCH)
-    using <%= "result#{p}#{k}" %> = mpl::lookup<<%= "xs#{k}" %>, <%= p*100/env[:p] %>>;
+    using <%= "result#{p}#{k}" %> = mpl::eager::lookup<<%= "xs#{k}" %>, <%= p*100/env[:p] %>>;
     #endif
     <% end %>
 <% end %>
