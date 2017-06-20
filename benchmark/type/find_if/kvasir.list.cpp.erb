@@ -21,7 +21,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::find_if<<%= "xs#{k}" %>, equals_to<<%= ints.last || 0 %>>::apply>;
+using <%= "result#{k}" %> = mpl::eager::find_if<<%= "xs#{k}" %>, equals_to<<%= ints.last || 0 %>>::apply>;
 #endif
 
 <% end %>

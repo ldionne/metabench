@@ -16,7 +16,7 @@ template<int, int> struct x;
     <% end %>
 
     #if defined(METABENCH)
-    using <%= "result#{k}" %> = mpl::join<<%= ints.map { |i| "xs#{k}#{i}" }.join(', ') %>>;
+    using <%= "result#{k}" %> = mpl::eager::join<<%= ints.map { |i| "xs#{k}#{i}" }.join(', ') %>>;
     #endif
 
 <% end %>

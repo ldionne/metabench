@@ -14,7 +14,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::reverse<<%= "xs#{k}" %>>;
+using <%= "result#{k}" %> = mpl::eager::reverse<<%= "xs#{k}" %>>;
 #endif
 
 <% end %>

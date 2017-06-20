@@ -17,7 +17,7 @@ using <%= "xs#{k}" %> = mpl::list<<%=
 %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::stable_sort<<%= "xs#{k}" %>,less>;
+using <%= "result#{k}" %> = mpl::eager::stable_sort<<%= "xs#{k}" %>,less>;
 #endif
 
 <% end %>

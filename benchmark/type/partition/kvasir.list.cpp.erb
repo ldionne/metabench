@@ -15,7 +15,7 @@ using <%= "xs#{k}" %> = mpl::list<
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = mpl::partition<<%= "xs#{k}" %>,is_even>;
+using <%= "result#{k}" %> = mpl::eager::partition<<%= "xs#{k}" %>,is_even>;
 #endif
 
 <% end %>
