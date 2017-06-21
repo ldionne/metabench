@@ -8,7 +8,6 @@ shallow_clone: true
 branches:
   except:
     - /pr\/.+/
-    - /.+/ # Temporarily disable all branches
 
 build:
   verbosity: detailed
@@ -38,6 +37,6 @@ before_build:
 build_script:
   - mkdir build
   - cd build
-  - cmake .. -G"%CMAKE_GENERATOR%" -DBOOST_ROOT="C:\Libraries\boost_1_59_0"
+  - cmake .. -G"%CMAKE_GENERATOR%" -DBOOST_ROOT="C:\Libraries\boost_1_63_0"
   - cmake --build .
   - ctest --output-on-failure
