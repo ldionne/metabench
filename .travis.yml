@@ -141,6 +141,13 @@ matrix:
     - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Ninja"
       addons: { apt: { packages: ["clang-3.9", "ninja-build"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
 
+before_install:
+  # Except for CRON jobs, only run partitioned jobs once (early out if we're not the first job).
+  - |
+    if [[ "${TRAVIS_EVENT_TYPE}" != "cron" && -v PART && "${PART}" != "1" ]]; then
+      exit 0
+    fi
+
 install:
   - export CXX=${COMPILER} # Override CXX set by Travis
   - ${CXX} --version
@@ -205,9 +212,9 @@ before_script:
   - (mkdir build && cd build && cmake .. -DBOOST_ROOT=${BOOST_DIR})
 
 script:
-  # Do not run tests during CRON jobs, and at most once per set of partitioned jobs.
+  # Do not run tests during CRON jobs.
   - |
-    if [[ "${TRAVIS_EVENT_TYPE}" != "cron" && (! -v PART || "${PART}" == "1") ]]; then
+    if [[ "${TRAVIS_EVENT_TYPE}" != "cron" ]]; then
       cmake --build build &&
       (cd build && ctest --output-on-failure -j3)
     fi
@@ -215,7 +222,7 @@ script:
   # During nightly builds, we generate the benchmarks and update the gh-pages
   # branch with the data, but only for jobs that are partitioned.
   - |
-    if [[ "${TRAVIS_EVENT_TYPE}" == "cron" && "${PART}" != "" ]]; then
+    if [[ "${TRAVIS_EVENT_TYPE}" == "cron" && -v PART ]]; then
       ALL_BENCHMARKS=($(cmake --build build --target help | grep -E "benchmark\.\w+\." | cut -d " " -f 2 | sort))
       SLICE_SIZE=$(expr ${#ALL_BENCHMARKS[@]} / ${PARTS} + ${#ALL_BENCHMARKS[@]} % ${PARTS})
       SLICE_BEGIN=$(expr \( ${PART} - 1 \) \* ${SLICE_SIZE})
