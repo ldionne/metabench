@@ -3,7 +3,8 @@
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 language: cpp
-os: linux
+os: linux # Use Linux under specified otherwise
+dist: precise # Use precise unless specified otherwise
 sudo: false
 
 # Do not build branches of the form "pr/*". By prefixing pull requests coming
@@ -16,27 +17,6 @@ cache:
   directories:
     - ${TRAVIS_BUILD_DIR}/deps/boost-1.63.0 # Keep this in sync with BOOST_VERSION
 
-addons:
-  apt:
-    packages:
-      - ninja-build
-      - clang-3.6
-      - clang-3.7
-      - clang-3.8
-      - clang-3.9
-      - g++-4.8
-      - g++-4.9
-      - g++-5
-      - g++-6
-
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.6
-      - llvm-toolchain-precise-3.7
-      - llvm-toolchain-precise-3.8
-      - llvm-toolchain-precise-3.9
-      - llvm-toolchain-precise
-
 env:
   global:
     # Number of parts in which we split the generation of benchmarks to avoid
@@ -47,49 +27,119 @@ env:
     # ${GITHUB_TOKEN} environment variable.
     - secure: "TY3VQ9eOoYxiBvP6kR+WyE0pgJ5vmxgXhCqjhGPWiieKn3H8hUhhbacSnmODXJQ89jbcIgLxUSPSWq3ZAJNDPem0nyEfoBklnJFq7IrZ1sXZ3ywBcHHEq/09+LTsjElg+9NU6HRMmzuT1WCG76/KmQHL7THSjQoPKHLAbHLuTzWeMVzC1qB0JC/SsfFXmuB0ZCNIQsu6P9ADLUpUgjm1mEXiUIDIXtfFPUvhC7UCC+kw5OR4rmwWM0adzFJglA2gom73fxkX9O/qPtZh6nroV7Vu6cUsbTjmW7YlV+0Us5YWgulC7dJqAO8GrHbfk35n3unMs2ScJ4nzWVEFCwCFiMOWb8VWIPRSQXDjuxkc1Cuf8A2M6FnFqZqhXE2JlsUfVAgI7zrG5LytYJkJxxphV4Hbkf0gTJ8VdA6dHV69AX8BIcszhCPo2PdMRvA+3iAL8FIMopVtDDcra8glO8JsFsR6C5ptdXMpDZ2/KMvoZta8Rpk38YEsiwf9mI7vBDV5okWM071U1jbVDGc8FIDfC14xIwFy7WFOWtZA4KYQTS5PxqEyPxtIRNNdWfCiNcNmm4eozw/kSmcYzMQxheWTx2Wv9V7EdKcx1r7mmv/MXzGnKLRW4j5I7VbG3pMXWr2KA5+qQdnYRjK/xa0j1aOD1OWwE4Fzt4ETkVGzZ8dvFm8="
 
-  matrix:
-    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=4
+matrix:
+  include:
+    # Clang 3.6
+    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
+    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
+    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
+    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
 
-    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # Clang 3.7
+    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
+    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
+    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
+    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
 
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # Clang 3.8
+    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
+    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
+    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
+    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
 
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # Clang 3.9
+    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
+    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
+    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
+    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
 
-    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # Clang 4.0
+    - env: COMPILER=clang++-4.0 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+      dist: trusty
+    - env: COMPILER=clang++-4.0 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+      dist: trusty
+    - env: COMPILER=clang++-4.0 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+      dist: trusty
+    - env: COMPILER=clang++-4.0 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+      dist: trusty
 
-    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # GCC 4.8
+    - env: COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["g++-4.8"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["g++-4.8"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["g++-4.8"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["g++-4.8"], sources: ["ubuntu-toolchain-r-test"] } }
 
-    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # GCC 4.9
+    - env: COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["g++-4.9"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["g++-4.9"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["g++-4.9"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-4.9 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["g++-4.9"], sources: ["ubuntu-toolchain-r-test"] } }
 
-    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=1
-    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=2
-    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=3
-    - COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=4
+    # GCC 5
+    - env: COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["g++-5"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["g++-5"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["g++-5"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-5 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["g++-5"], sources: ["ubuntu-toolchain-r-test"] } }
 
-    # Also test on ninja
-    - COMPILER=clang++-3.9 CMAKE_GENERATOR="Ninja"
+    # GCC 6
+    - env: COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: COMPILER=g++-6 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
+
+    # GCC 7
+    - env: COMPILER=g++-7 CMAKE_GENERATOR="Unix Makefiles" PART=1
+      addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
+      dist: trusty
+    - env: COMPILER=g++-7 CMAKE_GENERATOR="Unix Makefiles" PART=2
+      addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
+      dist: trusty
+    - env: COMPILER=g++-7 CMAKE_GENERATOR="Unix Makefiles" PART=3
+      addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
+      dist: trusty
+    - env: COMPILER=g++-7 CMAKE_GENERATOR="Unix Makefiles" PART=4
+      addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
+      dist: trusty
+
+    # Test on using the Ninja generator
+    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Ninja"
+      addons: { apt: { packages: ["clang-3.9", "ninja-build"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
 
 install:
   - export CXX=${COMPILER} # Override CXX set by Travis
@@ -112,6 +162,7 @@ install:
       elif [[ "${CXX}" == "clang++-3.7" ]]; then LLVM_VERSION="3.7.1";
       elif [[ "${CXX}" == "clang++-3.8" ]]; then LLVM_VERSION="3.8.1";
       elif [[ "${CXX}" == "clang++-3.9" ]]; then LLVM_VERSION="3.9.0";
+      elif [[ "${CXX}" == "clang++-4.0" ]]; then LLVM_VERSION="4.0.0";
       fi
 
       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
@@ -180,7 +231,7 @@ script:
         category="$(echo ${benchmark} | cut -d '.' -f 2)"
         name="$(echo ${benchmark} | cut -d '.' -f 3)"
         source="build/benchmark/${category}/${name}"
-        destination="tmp/_${category}/${COMPILER}/${name}"
+        destination="tmp/_${category}/${CXX}/${name}"
 
         rm -rf ${destination} &&
         mkdir -p ${destination} &&
@@ -189,7 +240,7 @@ script:
         {
           echo "---"
           echo "timestamp: $(date '+%a, %-d %b %Y')"
-          echo "compiler: ${COMPILER}"
+          echo "compiler: ${CXX}"
           echo "---"
           cat ${source}/index.html
         } > ${destination}/index.html
@@ -205,7 +256,7 @@ script:
 
       pushd tmp &&
       git add --all . &&
-      git commit -m "[${COMPILER}] Update benchmarks (${PART}/${PARTS})" &&
+      git commit -m "[${CXX}] Update benchmarks (${PART}/${PARTS})" &&
       # Suppress output to avoid leaking the token
       travis_retry git push origin gh-pages &>/dev/null &&
       popd
