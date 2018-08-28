@@ -3,25 +3,22 @@
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 #include <boost/tmp.hpp>
-
 namespace tmp = boost::tmp;
 
 template<int X>
-struct equals_to {
+struct differs_from {
   template <typename Y>
-  using apply = tmp::bool_<X == Y::value>;
+  using f = tmp::bool_<X != Y::value>;
 };
 
 <% env[:k].times do |k| %>
 
 <% ints = ((k*n+1)..(k*n+n)).to_a %>
 
-using <%= "xs#{k}" %> = tmp::list_<
-    <%= ints.map { |i| "tmp::int_<#{i}>" }.join(', ') %>
->;
+using <%= "xs#{k}" %> = tmp::list_<<%= ints.map { |i| "tmp::int_<#{i}>" }.join(', ') %>>;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = tmp::call_<tmp::unpack_<tmp::find_if_<tmp::lift_<equals_to<<%= ints.last || 0 %>>::apply>>>,<%= "xs#{k}" %>>;
+using <%= "result#{k}" %> = tmp::call_<tmp::unpack_<tmp::or_<tmp::lift_<differs_from<<%= ints.last || 0 %>>::template f>>>,<%= "xs#{k}" %>>;
 #endif
 
 <% end %>

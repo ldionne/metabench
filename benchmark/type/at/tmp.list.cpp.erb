@@ -5,21 +5,19 @@
 #include <boost/tmp.hpp>
 namespace tmp = boost::tmp;
 
-
-template<int, int> struct x;
+template<int> struct x;
 
 <% env[:k].times do |k| %>
 
-<% ints = ((k*n+1)..(k*n+n)).to_a %>
+using <%= "xs#{k}" %> = tmp::list_<
+    <%= ((k*n+1)..(k*n+n)).map { |i| "x<#{i}>" }.join(', ') %>
+>;
 
-    <% for i in ints %>
-        using <%= "xs#{k}#{i}" %> = tmp::list_<<%= (0..100).map { |j| "x<#{i}, #{j}>" }.join(', ') %>>;
-    <% end %>
-
+    <% (env[:p]*n/100).times do |p| %>
     #if defined(METABENCH)
-    using <%= "result#{k}" %> = tmp::call_<tmp::join_<>,<%= ints.map { |i| "xs#{k}#{i}" }.join(', ') %>>;
+    using <%= "result#{p}#{k}" %> = tmp::call_<tmp::unpack_<tmp::index_<tmp::uint_<<%= p*100/env[:p] %>>>>, <%= "xs#{k}" %>>;
     #endif
-
+    <% end %>
 <% end %>
 
 int main() {}

@@ -10,5 +10,6 @@ add_dataset(datasets type count_if metal   list   metal.list.cpp.erb   15 "(0..5
 add_dataset(datasets type count_if mp11    list   mp11.list.cpp.erb    15 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 add_dataset(datasets type count_if mpl     list   mpl.list.cpp.erb     50 "(0..50).step(10)")
 add_dataset(datasets type count_if mpl     vector mpl.vector.cpp.erb   30 "(0..50).step(10)")
+add_dataset(datasets type count_if tmp     list   tmp.list.cpp.erb     15 "(0..50).step(10).to_a + (100..500).step(50).to_a")
 
 add_chart(type count_if DATASETS ${datasets})

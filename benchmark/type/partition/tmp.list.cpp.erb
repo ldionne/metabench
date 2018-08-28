@@ -3,25 +3,19 @@
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
 #include <boost/tmp.hpp>
-
 namespace tmp = boost::tmp;
 
-template<int X>
-struct equals_to {
-  template <typename Y>
-  using apply = tmp::bool_<X == Y::value>;
-};
+template<typename N>
+using is_even = tmp::bool_<N::value % 2 == 0>;
 
 <% env[:k].times do |k| %>
 
-<% ints = ((k*n+1)..(k*n+n)).to_a %>
-
 using <%= "xs#{k}" %> = tmp::list_<
-    <%= ints.map { |i| "tmp::int_<#{i}>" }.join(', ') %>
+    <%= ((k*n+1)..(k*n+n)).map { |i| "tmp::int_<#{i}>" }.join(', ') %>
 >;
 
 #if defined(METABENCH)
-using <%= "result#{k}" %> = tmp::call_<tmp::unpack_<tmp::find_if_<tmp::lift_<equals_to<<%= ints.last || 0 %>>::apply>>>,<%= "xs#{k}" %>>;
+using <%= "result#{k}" %> = tmp::call_<tmp::unpack_<tmp::partition_<tmp::lift_<is_even>>>,<%= "xs#{k}" %>>;
 #endif
 
 <% end %>
