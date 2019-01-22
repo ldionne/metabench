@@ -5,10 +5,7 @@
 #include <meta/meta.hpp>
 
 template <int X>
-struct differs_from {
-    template<typename Y>
-    using invoke = meta::bool_<X != Y::type::value>;
-};
+using differs_from = meta::bind_front<meta::not_fn<meta::quote<meta::equal_to>>, meta::int_<X>>;
 
 <% env[:k].times do |k| %>
 
