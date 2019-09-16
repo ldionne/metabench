@@ -8,7 +8,6 @@ shallow_clone: true
 branches:
   except:
     - /pr\/.+/
-    - /.+/ # Temporarily disable all branches
 
 build:
   verbosity: detailed
