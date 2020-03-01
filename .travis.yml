@@ -21,46 +21,6 @@ env:
 
 matrix:
   include:
-    # Clang 3.6
-    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
-      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
-    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
-      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
-    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
-      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
-    - env: COMPILER=clang++-3.6 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
-      addons: { apt: { packages: ["clang-3.6"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.6"] } }
-
-    # Clang 3.7
-    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
-      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
-    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
-      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
-    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
-      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
-    - env: COMPILER=clang++-3.7 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
-      addons: { apt: { packages: ["clang-3.7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.7"] } }
-
-    # Clang 3.8
-    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
-      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
-    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
-      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
-    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
-      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
-    - env: COMPILER=clang++-3.8 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
-      addons: { apt: { packages: ["clang-3.8"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.8"] } }
-
-    # Clang 3.9
-    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
-      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
-    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
-      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
-    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
-      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
-    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
-      addons: { apt: { packages: ["clang-3.9"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
-
     # Clang 4.0
     - env: COMPILER=clang++-4.0 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
       addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
@@ -70,6 +30,36 @@ matrix:
       addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
     - env: COMPILER=clang++-4.0 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
       addons: { apt: { packages: ["clang-4.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+
+    # Clang 5.0
+    - env: COMPILER=clang++-5.0 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
+      addons: { apt: { packages: ["clang-5.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+    - env: COMPILER=clang++-5.0 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
+      addons: { apt: { packages: ["clang-5.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+    - env: COMPILER=clang++-5.0 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
+      addons: { apt: { packages: ["clang-5.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+    - env: COMPILER=clang++-5.0 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
+      addons: { apt: { packages: ["clang-5.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+
+    # Clang 6.0
+    - env: COMPILER=clang++-6.0 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
+      addons: { apt: { packages: ["clang-6.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
+    - env: COMPILER=clang++-6.0 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
+      addons: { apt: { packages: ["clang-6.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
+    - env: COMPILER=clang++-6.0 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
+      addons: { apt: { packages: ["clang-6.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
+    - env: COMPILER=clang++-6.0 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
+      addons: { apt: { packages: ["clang-6.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
+
+    # Clang 7
+    - env: COMPILER=clang++-7 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
+      addons: { apt: { packages: ["clang-7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
+    - env: COMPILER=clang++-7 CMAKE_GENERATOR="Unix Makefiles" PART="2/4"
+      addons: { apt: { packages: ["clang-7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
+    - env: COMPILER=clang++-7 CMAKE_GENERATOR="Unix Makefiles" PART="3/4"
+      addons: { apt: { packages: ["clang-7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
+    - env: COMPILER=clang++-7 CMAKE_GENERATOR="Unix Makefiles" PART="4/4"
+      addons: { apt: { packages: ["clang-7"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
 
     # GCC 4.8
     - env: COMPILER=g++-4.8 CMAKE_GENERATOR="Unix Makefiles" PART="1/4"
@@ -124,8 +114,8 @@ matrix:
       addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
 
     # Test using the Ninja generator
-    - env: COMPILER=clang++-3.9 CMAKE_GENERATOR="Ninja"
-      addons: { apt: { packages: ["clang-3.9", "ninja-build"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-precise-3.9"] } }
+    - env: COMPILER=clang++-7 CMAKE_GENERATOR="Ninja"
+      addons: { apt: { packages: ["clang-7", "ninja-build"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
 
 before_install:
   # Parse the partition information, if any
@@ -159,11 +149,10 @@ install:
   # Install libc++ and libc++abi if needed
   - |
     if [[ "${CXX%%+*}" == "clang" ]]; then
-      if   [[ "${CXX}" == "clang++-3.6" ]]; then LLVM_VERSION="3.6.2";
-      elif [[ "${CXX}" == "clang++-3.7" ]]; then LLVM_VERSION="3.7.1";
-      elif [[ "${CXX}" == "clang++-3.8" ]]; then LLVM_VERSION="3.8.1";
-      elif [[ "${CXX}" == "clang++-3.9" ]]; then LLVM_VERSION="3.9.0";
-      elif [[ "${CXX}" == "clang++-4.0" ]]; then LLVM_VERSION="4.0.0";
+        if [[ "${CXX}" == "clang++-4.0" ]]; then LLVM_VERSION="4.0.0";
+      elif [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.0";
+      elif [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.0";
+      elif [[ "${CXX}" == "clang++-7" ]];   then LLVM_VERSION="7.0.1";
       fi
 
       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
